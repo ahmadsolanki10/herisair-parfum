@@ -656,8 +656,11 @@
   .house-page .house-collection{
     min-height:100svh;
     display:grid;
+    grid-template-columns:minmax(0,1fr);
     grid-template-rows:auto 1fr;
     align-items:stretch;
+    width:100%;
+    max-width:100%;
     padding:0;
     background:#080302;
   }
@@ -666,6 +669,8 @@
     z-index:0;
     inset:auto;
     width:100%;
+    min-width:0;
+    max-width:100%;
     aspect-ratio:16/9;
     background-position:center;
     background-size:cover;
@@ -678,6 +683,8 @@
     position:relative;
     z-index:1;
     width:100%;
+    min-width:0;
+    max-width:100%;
     padding:2.6rem 1.4rem 5rem;
     text-align:center;
     background:linear-gradient(180deg,#080302,#0d0503 70%,#080302);
@@ -687,6 +694,11 @@
 }
 
 @media(max-width:520px){
+  .house-page .house-purpose-intro h2{
+    font-size:clamp(2.3rem,10.5vw,2.8rem);
+    text-align:center;
+  }
+  .house-page .purpose-title-mobile{white-space:nowrap}
   .house-page .house-code-grid{grid-template-columns:1fr}
   .house-page .house-code-grid article{min-height:0;padding:2rem 1rem 2.3rem;border-right:0;border-bottom:1px solid var(--house-line)}
   .house-page .house-code-grid article:last-child{border-bottom:0}
@@ -695,7 +707,9 @@
   .house-page .house-founder blockquote{font-size:1.16rem;line-height:1.55}
   .house-page .house-founder-watermark{width:142vw;max-width:none;opacity:.045}
   .house-page .house-collection-media{background-position:center}
-  .house-page .house-collection h2{font-size:clamp(2.85rem,11vw,4rem);letter-spacing:-.045em}
+  .house-page .house-collection-copy{padding-left:1rem;padding-right:1rem}
+  .house-page .house-collection h2{font-size:clamp(2.55rem,10.7vw,3.2rem);letter-spacing:-.04em}
+  .house-page .house-collection h2 span{white-space:normal}
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -796,6 +810,23 @@
 
 @media(max-width:520px){
   .house-page .house-founder.in .house-founder-watermark{opacity:.045}
+  .house-page #house-story h2{
+    width:100%;
+    text-align:center;
+  }
+  .house-page .house-founder h2{
+    width:100%;
+    text-align:center;
+  }
+  .house-page .house-founder-signature{
+    width:100%;
+    align-items:center;
+    text-align:center;
+  }
+  .house-page #house-story .house-detail-line{
+    width:100%;
+    text-align:center;
+  }
 }
 
 /* House — paired editorial chapters */
@@ -933,6 +964,7 @@
     font-size:clamp(2rem,9.1vw,2.75rem);
     line-height:.9;
     letter-spacing:-.035em;
+    text-align:center;
   }
 }
 
@@ -1223,9 +1255,35 @@
   .home .chapters-heading h2{
     display:flex;
     flex-wrap:wrap;
-    justify-content:center;
+    justify-content:flex-start;
     gap:.08em .28em;
     white-space:normal;
+  }
+  .home .chapters-heading{text-align:left}
+  .home .chapter-title-group i{display:none}
+  .home .chapters-heading>p{
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+  }
+  .home .chapter-copy{
+    align-items:flex-start;
+    padding-left:1.25rem;
+    padding-right:1.25rem;
+    text-align:left;
+  }
+  .home .chapter-copy h3{
+    width:100%;
+    text-align:center;
+  }
+  .home .chapter-notes{
+    width:100%;
+    text-align:center;
+  }
+  .home .chapter-card .discover-link{
+    width:100%;
+    justify-content:center;
+    text-align:center;
   }
   .home .house-intro{
     padding-left:1.4rem;
@@ -1250,6 +1308,7 @@
     font-size:.86rem;
     line-height:1.58;
     letter-spacing:.01em;
+    text-align:center;
     text-wrap:balance;
   }
 }
