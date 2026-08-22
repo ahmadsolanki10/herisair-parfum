@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hérisair — House Hero Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root{--champagne:#d8bea0;--copper:#c78236}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:#080503}
+    body{font-family:Manrope,Arial,sans-serif;color:var(--champagne)}
+    .hero{min-height:100svh;position:relative;overflow:hidden;background:url('assets/images/house-hero-desktop-v4-natural.png') center/cover no-repeat}
+    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,2,1,.72) 0%,rgba(7,3,2,.48) 27%,rgba(0,0,0,.04) 57%),linear-gradient(0deg,rgba(4,2,1,.22),transparent 42%)}
+    header{position:absolute;z-index:3;inset:0 0 auto;height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 4.5vw;background:rgba(0,0,0,.58);border-bottom:1px solid rgba(216,190,160,.14);backdrop-filter:blur(5px)}
+    nav{display:flex;gap:2.25rem;font-size:.8rem}nav a,.actions a{color:inherit;text-decoration:none}.brand{grid-column:2;line-height:0}.brand img{width:auto;height:32px}.actions{display:flex;justify-content:flex-end;gap:1.5rem;font-size:.8rem}
+    .copy{position:absolute;z-index:2;left:5.5vw;top:50%;width:min(38vw,650px);transform:translateY(-44%)}
+    .eyebrow{margin:0 0 1.2rem;font-family:"Cormorant Garamond",serif;font-size:.86rem;font-weight:500;letter-spacing:.28em;text-transform:uppercase}
+    h1{margin:0 0 1.8rem;font-family:"Cormorant Garamond",serif;font-size:clamp(4.7rem,6.7vw,7.4rem);font-weight:600;line-height:.83;letter-spacing:-.035em;text-transform:uppercase}
+    .intro{max-width:34rem;margin:0 0 2.25rem;font-family:"Cormorant Garamond",serif;font-size:clamp(1rem,1.25vw,1.38rem);line-height:1.45;text-transform:uppercase}
+    .link{display:inline-block;padding:.75rem 0;border-bottom:1px solid var(--copper);color:inherit;text-decoration:none;font-family:"Cormorant Garamond",serif;font-size:.85rem;letter-spacing:.2em;text-transform:uppercase}
+    .note{position:absolute;z-index:2;right:3vw;bottom:2.2rem;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(216,190,160,.6)}
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <header>
+      <nav><a href="#">The House</a><a href="#">Launch Collection</a><a href="#">Shop</a></nav>
+      <a class="brand" href="#"><img src="assets/images/herisair-header-logo.png" alt="Hérisair"></a>
+      <div class="actions"><a href="#">Account</a><a href="#">Bag</a></div>
+    </header>
+    <section class="copy">
+      <p class="eyebrow">The House of Hérisair</p>
+      <h1>Heritage,<br>in motion</h1>
+      <p class="intro">Born in the UAE, Hérisair composes fragrance for the place where identity, ambition and memory travel together.</p>
+      <a class="link" href="#">Our story</a>
+    </section>
+    <p class="note">House hero concept · desktop</p>
+  </main>
+</body>
+</html>
