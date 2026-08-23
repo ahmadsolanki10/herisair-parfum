@@ -1546,6 +1546,15 @@
 
 /* Mobile-only hero composition */
 @media(max-width:520px){
+  body.home{
+    max-width:100%;
+    overflow-x:hidden;
+  }
+  .home main{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+  }
   .home .hero{
     min-height:100svh;
     padding:6.5rem 1.25rem 2.6rem;
@@ -1627,14 +1636,19 @@
   .home .house-emblem{margin-bottom:2.4rem}
   .home .house-intro>.eyebrow{margin-bottom:1.25rem}
   .home .house-intro h2{
-    max-width:22rem;
-    font-size:clamp(2.05rem,10.2vw,2.75rem);
+    width:100%;
+    max-width:calc(100vw - 2.8rem);
+    margin-left:auto;
+    margin-right:auto;
+    font-size:clamp(1.45rem,7.2vw,2rem);
     line-height:.93;
-    letter-spacing:-.025em;
+    letter-spacing:-.035em;
+    text-align:center;
   }
   .home .house-intro h2 br{display:none}
   .home .house-heading-line{
     display:block;
+    width:100%;
     white-space:nowrap;
   }
   .home .house-intro-copy{
