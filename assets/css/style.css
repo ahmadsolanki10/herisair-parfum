@@ -196,6 +196,7 @@
   color:#d9bea0!important;
   font-size:clamp(1.3rem,1.8vw,1.65rem)!important;
 }
+.collection-page .collection-unity .collection-chapter-lead{white-space:nowrap}
 .collection-page .collection-family{
   margin:2rem 0 1.7rem;
   color:var(--house-accent);
@@ -205,6 +206,7 @@
   letter-spacing:.24em;
   text-transform:uppercase;
 }
+.collection-page .collection-chapter-actions{display:flex;align-items:flex-end;gap:clamp(1.25rem,2.5vw,2.5rem);flex-wrap:wrap}
 
 .collection-page .collection-formula{
   min-height:calc(100svh - 4.8rem);
@@ -323,6 +325,7 @@
   .collection-page .collection-chapter-media{height:auto;aspect-ratio:6/5;transform:none}
   .collection-page .collection-chapter-copy{max-width:38rem;padding:1rem .2rem 0}
   .collection-page .collection-chapter h2{font-size:clamp(3.7rem,15vw,5.7rem)}
+  .collection-page .collection-chapter-actions{gap:1.5rem;flex-wrap:nowrap}
   .collection-page .collection-formula{min-height:0;grid-template-columns:1fr}
   .collection-page .collection-formula-art{min-height:28rem}
   .collection-page .collection-formula-copy{padding:5.5rem 1.45rem 6rem}
@@ -2019,6 +2022,9 @@
   background:radial-gradient(circle at 78% 34%,rgba(112,37,10,.18),transparent 42%),linear-gradient(135deg,#0b0302 0%,#1c0804 58%,#090302 100%);
 }
 .fragrance-page .fragrance-story h2{margin:.85rem 0 0;color:#ead4b8;font-size:clamp(4rem,6.2vw,7rem);font-weight:500;line-height:.87;letter-spacing:-.04em;text-transform:uppercase}
+.fragrance-page .fragrance-story-title-line{display:block;white-space:nowrap}
+.fragrance-unity .fragrance-story h2{font-size:clamp(3.7rem,5.15vw,5.65rem);line-height:.94;letter-spacing:-.035em}
+.fragrance-unity .fragrance-story-title-line+.fragrance-story-title-line{padding-left:.3em}
 .fragrance-page .fragrance-story>p{max-width:41rem;margin:0;color:#c9ad8d;font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.3rem,1.75vw,1.7rem);line-height:1.58}
 .fragrance-page .fragrance-notes{
   width:min(100%,118rem);
@@ -2034,11 +2040,12 @@
 .fragrance-page .fragrance-notes-image{width:100%;margin:0;aspect-ratio:6/5;overflow:hidden;border:1px solid rgba(226,177,122,.14);border-radius:18px;box-shadow:0 24px 58px rgba(0,0,0,.48),0 5px 14px rgba(0,0,0,.3)}
 .fragrance-page .fragrance-notes-image img{width:100%;height:100%;object-fit:cover;object-position:center 43%;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
 .fragrance-page .fragrance-notes.in .fragrance-notes-image img{transform:scale(1.018)}
-.fragrance-page .fragrance-notes-copy h2{max-width:37rem;margin:.9rem 0 2.25rem;color:#ead4b8;font-size:clamp(2.7rem,4.3vw,5.1rem);font-weight:500;line-height:.92;letter-spacing:-.025em;text-transform:uppercase}
+.fragrance-page .fragrance-notes-copy h2{max-width:none;margin:.9rem 0 2.25rem;color:#ead4b8;font-size:clamp(1.6rem,2.7vw,3.7rem);font-weight:500;line-height:.92;letter-spacing:-.035em;text-transform:uppercase;white-space:nowrap}
 .fragrance-page .fragrance-note-pyramid{margin:0;border-top:1px solid var(--house-line)}
 .fragrance-page .fragrance-note-pyramid>div{display:grid;grid-template-columns:5.2rem 1fr;gap:1rem;padding:1.25rem 0;border-bottom:1px solid var(--house-line)}
 .fragrance-page .fragrance-note-pyramid dt{color:var(--house-accent);font:500 .69rem/1.5 Manrope,Arial,sans-serif;letter-spacing:.25em;text-transform:uppercase}
 .fragrance-page .fragrance-note-pyramid dd{margin:0;color:#d2b798;font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.03rem,1.25vw,1.28rem);line-height:1.5}
+.fragrance-page .fragrance-composition-shop{margin-top:2.25rem}
 .fragrance-page .fragrance-signature{min-height:56svh;padding:clamp(5.5rem,9vw,9rem) var(--pad);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#e3d0b5;color:#321407}
 .fragrance-page .fragrance-signature .eyebrow{color:#9f5528}
 .fragrance-page .fragrance-signature h2{margin:.8rem 0 1rem;font-size:clamp(3.4rem,6.2vw,7rem);font-weight:500;line-height:.9;letter-spacing:-.035em;text-transform:uppercase}
@@ -2047,23 +2054,31 @@
 .fragrance-page .fragrance-button-dark:hover{background:#9d4b1e;color:#f0dac0}
 
 @media(max-width:850px){
-  .fragrance-page .fragrance-hero{min-height:100svh;padding:7rem 1.45rem 3.8rem;align-items:flex-end}
-  .fragrance-page .fragrance-hero-media{background-position:center;transform:none}
-  .fragrance-unity .fragrance-hero-media{background-position:54% center}
-  .fragrance-ascent .fragrance-hero-media{background-position:51% center}
-  .fragrance-eminence .fragrance-hero-media{background-position:51% center}
-  .fragrance-page .fragrance-hero::after{background:linear-gradient(0deg,rgba(5,2,1,.92) 0%,rgba(6,2,1,.48) 42%,rgba(0,0,0,.04) 76%),linear-gradient(90deg,rgba(5,2,1,.45),rgba(0,0,0,.02))}
-  .fragrance-page .fragrance-hero-copy{width:100%}
-  .fragrance-page .fragrance-hero h1{font-size:clamp(4.5rem,19vw,6.4rem)}
-  .fragrance-page .fragrance-hero-copy>p:not(.eyebrow){font-size:1.12rem}
+  body.fragrance-page{max-width:100%;overflow-x:hidden;overflow-x:clip}
+  .fragrance-page .fragrance-hero{min-height:100svh;padding:7rem 1.45rem 1.45rem;align-items:stretch}
+  .fragrance-page .fragrance-hero-media{background-color:#120604;background-repeat:no-repeat;transform:none}
+  .fragrance-unity .fragrance-hero-media{background-image:url('../images/mobile-hero-unity-v2.png');background-position:center;background-size:cover}
+  .fragrance-ascent .fragrance-hero-media{background-image:url('../images/mobile-hero-ascent-v2.png');background-position:center;background-size:cover}
+  .fragrance-eminence .fragrance-hero-media{background-image:url('../images/mobile-hero-eminence-v2.png');background-position:center;background-size:cover}
+  .fragrance-page .fragrance-hero::after{background:linear-gradient(180deg,rgba(5,2,1,.82) 0%,rgba(6,2,1,.42) 23%,rgba(0,0,0,.03) 43%,rgba(0,0,0,.02) 71%,rgba(5,2,1,.74) 100%),linear-gradient(90deg,rgba(5,2,1,.3),rgba(0,0,0,.02))}
+  .fragrance-page .fragrance-hero-copy{width:100%;display:flex;flex:1;flex-direction:column;align-items:flex-start}
+  .fragrance-page .fragrance-hero-copy>.eyebrow{margin:0 0 .35rem}
+  .fragrance-page .fragrance-hero h1{margin:.25rem 0 .45rem;font-size:clamp(3.35rem,14.5vw,4.6rem);line-height:.86}
+  .fragrance-page .fragrance-hero-copy>p:not(.eyebrow){max-width:21rem;margin:0;font-size:1.06rem;line-height:1.35}
+  .fragrance-page .fragrance-hero-copy>.fragrance-button{margin-top:auto}
   .fragrance-page .fragrance-story{min-height:0;padding:5.4rem 1.45rem 6rem;grid-template-columns:1fr;gap:2.5rem}
   .fragrance-page .fragrance-story h2{font-size:clamp(3.4rem,13.5vw,5rem)}
+  .fragrance-unity .fragrance-story{gap:3.25rem}
+  .fragrance-unity .fragrance-story>div{min-width:0;max-width:100%}
+  .fragrance-unity .fragrance-story h2{width:100%;max-width:100%;font-size:min(8.2vw,2.75rem);line-height:.96;text-align:center}
+  .fragrance-unity .fragrance-story-title-line{width:100%}
+  .fragrance-unity .fragrance-story-title-line+.fragrance-story-title-line{padding-left:0}
   .fragrance-page .fragrance-story>p{font-size:1.22rem}
   .fragrance-page .fragrance-notes{min-height:0;padding:5rem 1.15rem 5.8rem;grid-template-columns:1fr;gap:3rem}
   .fragrance-page .fragrance-notes-image{aspect-ratio:6/5;border-radius:14px}
   .fragrance-page .fragrance-notes-image img{object-position:center 43%}
   .fragrance-page .fragrance-notes-copy{text-align:center}
-  .fragrance-page .fragrance-notes-copy h2{margin-left:auto;margin-right:auto;font-size:clamp(2.8rem,12vw,4.2rem)}
+  .fragrance-page .fragrance-notes-copy h2{width:100%;margin-left:auto;margin-right:auto;font-size:clamp(1.25rem,6.6vw,2.65rem)}
   .fragrance-page .fragrance-note-pyramid{text-align:left}
   .fragrance-page .fragrance-note-pyramid>div{grid-template-columns:4.5rem 1fr}
   .fragrance-page .fragrance-note-pyramid dd{font-size:1.05rem}
@@ -2072,10 +2087,63 @@
 }
 @media(max-width:520px){
   .fragrance-page .fragrance-button{width:100%;min-height:56px;padding:0 1rem}
-  .fragrance-page .fragrance-hero h1{font-size:clamp(4rem,18vw,5rem)}
+  .fragrance-page .fragrance-hero h1{font-size:clamp(3.15rem,14vw,4rem)}
   .fragrance-page .fragrance-story h2{font-size:clamp(3rem,12.5vw,4rem)}
-  .fragrance-page .fragrance-notes-copy h2{font-size:clamp(2.55rem,11vw,3.35rem)}
+  .fragrance-unity .fragrance-story h2{font-size:clamp(2rem,9.3vw,2.65rem);line-height:.96;text-align:center}
+  .fragrance-page .fragrance-notes-copy h2{font-size:clamp(1.25rem,6.6vw,2.65rem)}
   .fragrance-page .fragrance-note-pyramid>div{grid-template-columns:1fr;gap:.35rem;padding:1.1rem 0}
   .fragrance-page .fragrance-note-pyramid dt{text-align:center}
   .fragrance-page .fragrance-note-pyramid dd{text-align:center}
+}
+
+/* Homepage consultation and discovery CTA refinement */
+.home .quiz-promo h2{
+  width:100%;
+  font-size:clamp(2.1rem,4.05vw,5.1rem);
+}
+.home .quiz-question-line{
+  display:block;
+  white-space:nowrap;
+}
+.home .quiz-promo-cta{
+  margin-top:1.25rem;
+  border-color:#c78236;
+  background:rgba(8,3,1,.38);
+  color:#d8bea0;
+}
+.home .quiz-promo-cta:hover{
+  border-color:#df7723;
+  background:#b94a08;
+  color:#f0d8bb;
+}
+.home .chapter-card .discover-link,
+.home .house-intro-cta{
+  display:inline-block;
+  width:max-content;
+  min-width:0;
+  padding:.72rem 0;
+  border-bottom:1px solid #c37532;
+  color:#d9bea0;
+  font-family:Manrope,Arial,sans-serif;
+  font-size:.7rem;
+  line-height:1.5;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  transition:color .25s ease,border-color .25s ease;
+}
+.home .chapter-card .discover-link:hover,
+.home .house-intro-cta:hover{
+  border-bottom:1px solid #df7723;
+  color:#f0d9bc;
+}
+@media(max-width:850px){
+  .home .quiz-promo h2{font-size:clamp(2rem,8.3vw,2.7rem)}
+}
+@media(max-width:520px){
+  .home .quiz-promo h2{font-size:clamp(1.9rem,8.15vw,2.55rem)}
+  .home .chapter-card .discover-link,
+  .home .house-intro-cta{
+    width:max-content;
+    align-self:center;
+  }
 }
