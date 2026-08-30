@@ -44,9 +44,16 @@
   <main class="preview">
     <div class="preview-bar">
       <span>Mobile preview · 390px</span>
-      <a href="index.html" target="_blank" rel="noopener">Open website</a>
+      <a href="index.html" data-open-site target="_blank" rel="noopener">Open website</a>
     </div>
-    <iframe src="index.html?preview=mobile" title="Hérisair homepage mobile preview"></iframe>
+    <iframe src="index.html?preview=mobile" data-mobile-frame title="Hérisair mobile preview"></iframe>
   </main>
+  <script>
+    const requestedPage=new URLSearchParams(location.search).get('page');
+    if(requestedPage&&/^[a-z0-9-]+\.html$/i.test(requestedPage)){
+      document.querySelector('[data-mobile-frame]').src=requestedPage+'?preview=mobile';
+      document.querySelector('[data-open-site]').href=requestedPage;
+    }
+  </script>
 </body>
 </html>

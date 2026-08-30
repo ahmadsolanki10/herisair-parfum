@@ -65,9 +65,15 @@
  });
  renderBag();
  const grid=$('[data-products]'); if(grid) grid.innerHTML=products.map(p=>`<article class="product-card reveal"><a href="${p.slug}.html"><figure><img src="assets/images/${p.image}" loading="lazy" alt="Hérisair ${p.name} automotive fragrance"><figcaption>${p.number}</figcaption></figure><div class="product-meta"><div><p class="eyebrow">${p.family}</p><h3>${p.name}</h3></div><span>AED ${p.price}</span></div><p>${p.tagline}</p></a><button class="text-link" data-add="${p.slug}">Add to bag <span>↗</span></button></article>`).join('');
+ function storeNotesMarkup(p){
+  if(!p.storeNotes)return `<p>${p.tagline}</p>`;
+  return `<dl class="store-note-pyramid" aria-label="${p.name} fragrance notes"><div><dt>Top</dt><dd>${p.storeNotes.top.join(' · ')}</dd></div><div><dt>Heart</dt><dd>${p.storeNotes.heart.join(' · ')}</dd></div><div><dt>Base</dt><dd>${p.storeNotes.base.join(' · ')}</dd></div></dl>`;
+ }
  function storeCardMarkup(p,detailLink=true){
-  const details=`<figure><img src="assets/images/${p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure><div class="store-card-meta"><p class="eyebrow">${p.family}</p><h3>${p.name}</h3><p>${p.tagline}</p><strong>${priceLabel(p)}</strong></div>`;
-  return `<article class="store-card" data-store-card>${detailLink?`<a class="store-card-link" href="${p.slug}.html" aria-label="Discover ${p.name}">${details}</a>`:`<div class="store-card-link">${details}</div>`}<div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></article>`;
+  const figure=`<figure><img src="assets/images/${p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure>`;
+  const meta=`<p class="eyebrow">${p.storeFamily||p.family}</p><h3>${detailLink?`<a class="store-card-title-link" href="${p.slug}.html">${p.name}</a>`:p.name}</h3>${storeNotesMarkup(p)}<strong>${priceLabel(p)}</strong>`;
+  const details=detailLink?`<a class="store-card-link" href="${p.slug}.html" aria-label="Discover ${p.name}">${figure}</a><div class="store-card-meta">${meta}</div>`:`<div class="store-card-link">${figure}<div class="store-card-meta">${meta}</div></div>`;
+  return `<article class="store-card reveal" data-store-card>${details}<div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></article>`;
  }
  const storeFragrances=$('[data-store-fragrances]');
  if(storeFragrances)storeFragrances.innerHTML=products.map(p=>storeCardMarkup(p,true)).join('');
@@ -137,6 +143,36 @@
  }
  const contact=$('[data-contact]');if(contact)contact.onsubmit=async e=>{e.preventDefault();const note=$('.form-note',contact),btn=$('button',contact);if(!contact.checkValidity()){contact.reportValidity();return}btn.disabled=true;btn.textContent='Sending…';try{const endpoint=contact.dataset.endpoint;if(!endpoint)throw Error();const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(contact)))});if(!res.ok)throw Error();note.textContent='Thank you. A client advisor will be in touch shortly.';contact.reset()}catch{note.textContent='The form is ready, but its secure mail connection must be configured before launch.'}finally{btn.disabled=false;btn.textContent='Send enquiry'}};
  const checkout=$('.checkout');if(checkout)checkout.onclick=()=>{const toast=$('.toast');toast.textContent=bag.length?'Secure checkout must be connected before orders can be accepted.':'Your selection is empty.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3500)};
- const quiz=$('[data-quiz]');if(quiz){let step=0,scores={unity:0,ascent:0,eminence:0};const questions=[{q:'What should your car feel like?',a:[['A familiar sanctuary','unity'],['A place of momentum','ascent'],['A private statement','eminence']]},{q:'Which trail draws you in?',a:[['Warm spice and soft sweetness','unity'],['Citrus, musk and amber','ascent'],['Oud, earth and aromatic woods','eminence']]},{q:'Choose the impression you leave.',a:[['Grounded and composed','unity'],['Bright and assured','ascent'],['Distinguished and commanding','eminence']]}];function show(){if(step<questions.length){const x=questions[step];quiz.innerHTML=`<p class="quiz-step">0${step+1} / 03</p><h2>${x.q}</h2><div class="quiz-answers">${x.a.map(a=>`<button data-choice="${a[1]}">${a[0]}<span>→</span></button>`).join('')}</div>`;$$('[data-choice]',quiz).forEach(b=>b.onclick=()=>{scores[b.dataset.choice]++;step++;show()})}else{const slug=Object.keys(scores).sort((a,b)=>scores[b]-scores[a])[0],p=products.find(x=>x.slug===slug);quiz.innerHTML=`<p class="eyebrow">Your fragrance</p><h2>${p.name}</h2><p class="quiz-result">${p.description}</p><img src="assets/images/${p.image}" alt="Hérisair ${p.name}"><div><a class="btn" href="${p.slug}.html">Experience ${p.name}</a><button class="text-link" data-restart>Begin again</button></div>`;$('[data-restart]').onclick=()=>{step=0;scores={unity:0,ascent:0,eminence:0};show()}}}show()}
+ const quiz=$('[data-quiz]');if(quiz){
+  let step=0,scores={unity:0,ascent:0,eminence:0};
+  const questions=[
+   {q:'What should your car feel like?',a:[['A familiar sanctuary','unity'],['A place of momentum','ascent'],['A private statement','eminence']]},
+   {q:'Which trail draws you in?',a:[['Warm spice and soft sweetness','unity'],['Citrus, musk and amber','ascent'],['Oud, earth and aromatic woods','eminence']]},
+   {q:'Choose the impression you leave',a:[['Grounded and composed','unity'],['Bright and assured','ascent'],['Distinguished and commanding','eminence']]}
+  ];
+  const resultDetails={
+   unity:{chapter:'Chapter I · The Awakening',family:'Oud · Amber · Spicy',desktop:'collection-unity-v1.jpeg',mobile:'mobile-hero-unity-v2.png'},
+   ascent:{chapter:'Chapter II · The Rise',family:'Citrus · Fruity · Fresh',desktop:'collection-ascent-v1.png',mobile:'mobile-hero-ascent-v2.png'},
+   eminence:{chapter:'Chapter III · The Achievement',family:'Oriental · Leather · Woody',desktop:'collection-eminence-v1.png',mobile:'mobile-hero-eminence-v2.png'}
+  };
+  const restart=()=>{step=0;scores={unity:0,ascent:0,eminence:0};showIntro()};
+  const bindStart=()=>{const start=$('[data-quiz-start]',quiz);if(start)start.onclick=()=>showQuestion()};
+  function showIntro(){
+   quiz.innerHTML=`<div class="scent-quiz-intro scent-quiz-enter"><p class="eyebrow">A private consultation</p><h1 id="quiz-title">Your atmosphere<br>considered</h1><p class="scent-quiz-lead">Three considered questions reveal the fragrance that belongs in your interior.</p><button class="scent-quiz-button" type="button" data-quiz-start>Begin the consultation</button><p class="scent-quiz-meta">03 questions <span aria-hidden="true">·</span> About one minute</p></div>`;
+   bindStart();
+  }
+  function showQuestion(){
+   if(step>=questions.length){showResult();return}
+   const x=questions[step],current=String(step+1).padStart(2,'0'),progress=((step+1)/questions.length)*100;
+   quiz.innerHTML=`<div class="scent-quiz-question scent-quiz-enter"><div class="scent-quiz-progress"><span>Question ${current}</span><span>${current} / 03</span></div><div class="scent-quiz-progress-track" role="progressbar" aria-label="Consultation progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${step+1}"><i style="width:${progress}%"></i></div><p class="eyebrow">Scent discovery</p><h2>${x.q}</h2><div class="scent-quiz-answers">${x.a.map((a,i)=>`<button type="button" data-choice="${a[1]}"><span class="scent-quiz-answer-number">0${i+1}</span><span>${a[0]}</span><span class="scent-quiz-arrow" aria-hidden="true">→</span></button>`).join('')}</div></div>`;
+   $$('[data-choice]',quiz).forEach(b=>b.onclick=()=>{scores[b.dataset.choice]++;step++;showQuestion()});
+  }
+  function showResult(){
+   const slug=Object.keys(scores).sort((a,b)=>scores[b]-scores[a])[0],p=products.find(x=>x.slug===slug),detail=resultDetails[slug];
+   quiz.innerHTML=`<article class="scent-quiz-result scent-quiz-enter"><picture class="scent-quiz-result-media"><source media="(max-width: 850px)" srcset="assets/images/${detail.mobile}"><img src="assets/images/${detail.desktop}" alt="Hérisair ${p.name} fragrance"></picture><div class="scent-quiz-result-copy"><p class="eyebrow">Your fragrance</p><p class="scent-quiz-chapter">${detail.chapter}</p><h2>${p.name}</h2><p class="scent-quiz-family">${detail.family}</p><p class="scent-quiz-result-description">${p.description}</p><div class="scent-quiz-result-actions"><a class="scent-quiz-button" href="${p.slug}.html">Discover ${p.name}</a><button class="scent-quiz-restart" type="button" data-restart>Begin again</button></div></div></article>`;
+   $('[data-restart]',quiz).onclick=restart;
+  }
+  bindStart();
+ }
  window.addEventListener('scroll',()=>root.style.setProperty('--scroll',window.scrollY));
 })();

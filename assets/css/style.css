@@ -1840,6 +1840,7 @@
   line-height:.9;
   text-transform:uppercase;
 }
+.store-card-title-link{color:inherit;text-decoration:none}
 .store-card-meta>p:not(.eyebrow){min-height:3.2em;margin:1rem 0;color:#725e52}
 .store-card-meta strong{
   display:block;
@@ -2146,4 +2147,588 @@
     width:max-content;
     align-self:center;
   }
+}
+
+/* Scent consultation — House/Collection editorial system */
+body.scent-quiz-page{overflow-x:clip;background:var(--house-bg)}
+.scent-quiz-page .scent-quiz-main{overflow:hidden;background:transparent}
+.scent-quiz-stage{
+  min-height:calc(100svh - 114px);
+  padding:clamp(3.5rem,7vw,7.5rem) var(--pad);
+  display:grid;
+  place-items:center;
+  position:relative;
+  isolation:isolate;
+}
+.scent-quiz-stage::before{
+  content:'';
+  position:absolute;
+  z-index:-2;
+  inset:0;
+  background:
+    radial-gradient(circle at 74% 32%,rgba(116,39,12,.24),transparent 35%),
+    radial-gradient(circle at 20% 78%,rgba(70,19,8,.17),transparent 36%),
+    linear-gradient(122deg,#080302 0%,#170604 52%,#090302 100%);
+}
+.scent-quiz-frame{
+  width:min(1380px,100%);
+  min-width:0;
+  min-height:min(710px,72svh);
+  padding:clamp(2.6rem,5.5vw,6rem);
+  display:grid;
+  align-items:center;
+  position:relative;
+  background:linear-gradient(135deg,rgba(21,7,4,.8),rgba(8,3,2,.44));
+  box-shadow:0 30px 90px rgba(0,0,0,.24);
+}
+.scent-quiz-panel{width:100%;min-width:0;color:var(--house-copy)}
+.scent-quiz-intro{max-width:840px;min-width:0;margin:auto;text-align:center}
+.scent-quiz-intro h1{
+  margin:.65rem 0 1.65rem;
+  color:#ead6bb;
+  font-size:clamp(4rem,7.6vw,8.2rem);
+  font-weight:500;
+  line-height:.8;
+  letter-spacing:-.038em;
+  text-transform:uppercase;
+}
+.scent-quiz-lead{
+  max-width:38rem;
+  margin:0 auto 2.3rem;
+  color:#cdb292;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.18rem,1.55vw,1.55rem);
+  line-height:1.55;
+}
+.scent-quiz-button{
+  display:inline-flex;
+  min-height:62px;
+  padding:0 2.5rem;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #c78236;
+  border-radius:0;
+  background:rgba(8,3,1,.38);
+  color:#d8bea0;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:.84rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  transition:background .3s ease,border-color .3s ease,color .3s ease;
+}
+.scent-quiz-button:hover,
+.scent-quiz-button:focus-visible{border-color:#df7723;background:#b94a08;color:#f0d8bb}
+.scent-quiz-meta{
+  margin:1.4rem 0 0;
+  color:#9f8267;
+  font:500 .6rem/1.4 Manrope,Arial,sans-serif;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+.scent-quiz-meta span{padding:0 .6rem;color:var(--house-accent)}
+.scent-quiz-question{width:min(1120px,100%);min-width:0;margin:auto}
+.scent-quiz-progress{
+  display:flex;
+  justify-content:space-between;
+  color:#aa8d70;
+  font:500 .61rem/1.4 Manrope,Arial,sans-serif;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+.scent-quiz-progress-track{height:1px;margin:.95rem 0 clamp(3rem,6vw,5.6rem);overflow:hidden;background:rgba(213,168,112,.17)}
+.scent-quiz-progress-track i{display:block;height:100%;background:var(--house-accent);transition:width .55s cubic-bezier(.2,.65,.25,1)}
+.scent-quiz-question>.eyebrow{margin:0 0 .8rem}
+.scent-quiz-question h2{
+  max-width:930px;
+  margin:0 0 clamp(2.5rem,4vw,4rem);
+  color:#ead6bb;
+  font-size:clamp(3.4rem,6.2vw,7.1rem);
+  font-weight:500;
+  line-height:.88;
+  letter-spacing:-.032em;
+}
+.scent-quiz-answers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--house-line)}
+.scent-quiz-answers button{
+  min-height:178px;
+  padding:1.55rem;
+  display:grid;
+  grid-template-columns:1fr auto;
+  grid-template-rows:auto 1fr;
+  gap:.9rem;
+  align-items:end;
+  border:0;
+  border-right:1px solid var(--house-line);
+  border-bottom:1px solid var(--house-line);
+  background:rgba(15,5,3,.28);
+  color:#d4bb9c;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.3rem,1.7vw,1.75rem);
+  line-height:1.25;
+  text-align:left;
+  transition:background .3s ease,color .3s ease,transform .3s ease;
+}
+.scent-quiz-answers button:first-child{border-left:1px solid var(--house-line)}
+.scent-quiz-answers button:hover,
+.scent-quiz-answers button:focus-visible{background:rgba(140,54,18,.42);color:#f0d8bb;transform:translateY(-3px)}
+.scent-quiz-answer-number{
+  grid-column:1/-1;
+  align-self:start;
+  color:var(--house-accent);
+  font:500 .6rem/1 Manrope,Arial,sans-serif;
+  letter-spacing:.2em;
+}
+.scent-quiz-arrow{color:var(--house-accent);font-family:Manrope,Arial,sans-serif;font-size:1.1rem;transition:transform .25s ease}
+.scent-quiz-answers button:hover .scent-quiz-arrow{transform:translateX(.35rem)}
+.scent-quiz-result{min-width:0;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr);gap:clamp(3rem,6vw,7rem);align-items:center}
+.scent-quiz-result-media{
+  display:block;
+  aspect-ratio:6/5;
+  overflow:hidden;
+  border:1px solid rgba(213,168,112,.18);
+  border-radius:16px;
+  background:#0e0503;
+  box-shadow:0 28px 65px rgba(0,0,0,.35);
+}
+.scent-quiz-result-media img{width:100%;height:100%;object-fit:cover;object-position:center}
+.scent-quiz-result-copy{max-width:540px}
+.scent-quiz-chapter{
+  margin:1rem 0 .4rem;
+  color:#aa8d70;
+  font:500 .67rem/1.5 Manrope,Arial,sans-serif;
+  letter-spacing:.23em;
+  text-transform:uppercase;
+}
+.scent-quiz-result-copy h2{
+  margin:0;
+  color:#ead6bb;
+  font-size:clamp(5.2rem,8vw,9rem);
+  font-weight:500;
+  line-height:.78;
+  letter-spacing:-.035em;
+  text-transform:uppercase;
+}
+.scent-quiz-family{
+  margin:2rem 0 1.35rem;
+  color:var(--house-accent);
+  font:500 .7rem/1.5 Manrope,Arial,sans-serif;
+  letter-spacing:.26em;
+  text-transform:uppercase;
+}
+.scent-quiz-result-description{
+  max-width:33rem;
+  margin:0;
+  color:#cdb292;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.18rem,1.45vw,1.48rem);
+  line-height:1.55;
+}
+.scent-quiz-result-actions{margin-top:2.3rem;display:flex;align-items:center;gap:1.9rem;flex-wrap:wrap}
+.scent-quiz-restart{
+  padding:.7rem 0;
+  border:0;
+  border-bottom:1px solid var(--house-accent);
+  background:none;
+  color:#d4b99a;
+  font:500 .65rem/1.4 Manrope,Arial,sans-serif;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+.scent-quiz-enter{animation:scentQuizEnter .72s cubic-bezier(.2,.65,.25,1) both}
+.scent-quiz-answers button{animation:scentQuizAnswer .56s cubic-bezier(.2,.65,.25,1) both}
+.scent-quiz-answers button:nth-child(2){animation-delay:.07s}
+.scent-quiz-answers button:nth-child(3){animation-delay:.14s}
+@keyframes scentQuizEnter{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes scentQuizAnswer{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(max-width:850px){
+  .scent-quiz-stage{min-height:calc(100svh - 94px);padding:2rem 1rem 3rem}
+  .scent-quiz-frame{min-height:calc(100svh - 8rem);padding:4.25rem 1.25rem 3rem}
+  .scent-quiz-intro h1{margin:.7rem 0 1.4rem;font-size:clamp(2.9rem,13vw,4.35rem);line-height:.84}
+  .scent-quiz-lead{max-width:20rem;font-size:1.19rem}
+  .scent-quiz-button{width:100%;min-height:58px;padding:0 1rem}
+  .scent-quiz-progress-track{margin-bottom:3.5rem}
+  .scent-quiz-question h2{margin-bottom:2.6rem;font-size:clamp(3.15rem,13.5vw,4.6rem);line-height:.9}
+  .scent-quiz-answers{grid-template-columns:1fr;border-top:0}
+  .scent-quiz-answers button{
+    min-height:92px;
+    padding:1rem 1.1rem;
+    grid-template-columns:2.3rem 1fr auto;
+    grid-template-rows:1fr;
+    align-items:center;
+    border:0;
+    border-top:1px solid var(--house-line);
+    font-size:1.25rem;
+  }
+  .scent-quiz-answers button:first-child{border-left:0}
+  .scent-quiz-answers button:last-child{border-bottom:1px solid var(--house-line)}
+  .scent-quiz-answer-number{grid-column:auto;align-self:center}
+  .scent-quiz-result{grid-template-columns:1fr;gap:2.35rem}
+  .scent-quiz-result-media{aspect-ratio:390/690;border-radius:14px}
+  .scent-quiz-result-media img{object-position:center}
+  .scent-quiz-result-copy{text-align:center}
+  .scent-quiz-result-copy h2{font-size:clamp(4.3rem,20vw,6rem)}
+  .scent-quiz-family{margin-top:1.6rem}
+  .scent-quiz-result-description{font-size:1.18rem}
+  .scent-quiz-result-actions{margin-top:1.9rem;display:grid;gap:1rem}
+  .scent-quiz-restart{width:max-content;margin:auto}
+}
+@media(max-width:420px){
+  .scent-quiz-frame{padding-left:1rem;padding-right:1rem}
+  .scent-quiz-intro h1{font-size:clamp(2.75rem,12.8vw,3.4rem)}
+  .scent-quiz-question h2{font-size:clamp(2.75rem,13vw,3.7rem)}
+}
+@media(prefers-reduced-motion:reduce){
+  .scent-quiz-enter,.scent-quiz-answers button{animation:none}
+  .scent-quiz-button,.scent-quiz-answers button,.scent-quiz-arrow{transition:none}
+}
+
+/* Supporting pages — shared Hérisair editorial system */
+body.utility-page,
+body.house-page.store-page{
+  overflow-x:clip;
+  background:var(--house-bg);
+  color:var(--house-copy);
+}
+
+.utility-page .utility-main,
+.house-page.store-page main{
+  overflow:hidden;
+  background:transparent;
+}
+
+.utility-hero{
+  min-height:62svh;
+  padding:clamp(8rem,13vw,12rem) var(--pad) clamp(4.5rem,8vw,7rem);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  position:relative;
+  isolation:isolate;
+  border-bottom:1px solid var(--house-line);
+  background:
+    radial-gradient(circle at 78% 32%,rgba(123,43,13,.25),transparent 36%),
+    radial-gradient(circle at 20% 82%,rgba(71,19,8,.15),transparent 38%),
+    linear-gradient(132deg,#080302 0%,#1b0704 56%,#080302 100%);
+}
+.utility-hero::after{
+  content:'';
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  opacity:.22;
+  background:linear-gradient(115deg,transparent 0 54%,rgba(215,146,79,.08) 54.1% 54.2%,transparent 54.3%);
+  pointer-events:none;
+}
+.utility-hero .eyebrow{margin:0 0 1rem}
+.utility-hero h1{
+  max-width:70rem;
+  margin:0;
+  color:#ead6bb;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(4.6rem,8.4vw,9.5rem);
+  font-weight:500;
+  line-height:.78;
+  letter-spacing:-.045em;
+  text-transform:uppercase;
+}
+.utility-hero h1 span{display:block}
+.utility-hero-lead{
+  max-width:42rem;
+  margin:2rem 0 0;
+  color:#cbb294;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.15rem,1.6vw,1.55rem);
+  line-height:1.55;
+}
+
+.utility-content{
+  width:min(1280px,100%);
+  min-height:64svh;
+  margin:0 auto;
+  padding:clamp(5rem,9vw,9rem) var(--pad) clamp(6rem,11vw,11rem);
+  display:grid;
+  grid-template-columns:minmax(14rem,.52fr) minmax(0,1fr);
+  gap:clamp(3rem,8vw,9rem);
+  align-items:start;
+}
+.utility-content-intro{position:sticky;top:8rem}
+.utility-content-intro .eyebrow{margin:0 0 1rem}
+.utility-content-intro h2{
+  margin:0;
+  color:#ead6bb;
+  font-size:clamp(2.7rem,4.7vw,5.4rem);
+  font-weight:500;
+  line-height:.86;
+  letter-spacing:-.035em;
+  text-transform:uppercase;
+}
+.utility-content-intro p:not(.eyebrow){
+  max-width:23rem;
+  margin:1.4rem 0 0;
+  color:#a98f71;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:1.1rem;
+  line-height:1.55;
+}
+.utility-page .prose{min-width:0;color:#cdb292}
+.utility-page .prose h2{
+  margin:3.6rem 0 1rem;
+  color:#e4ceb1;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(2rem,3.2vw,3.5rem);
+  font-weight:500;
+  line-height:1;
+  letter-spacing:-.02em;
+}
+.utility-page .prose h2:first-child{margin-top:0}
+.utility-page .prose p,
+.utility-page .prose li{
+  max-width:52rem;
+  color:#c5a988;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.08rem,1.35vw,1.3rem);
+  line-height:1.65;
+}
+.utility-page .prose strong{color:#dfc5a4;font-weight:600}
+.utility-page .prose>.btn,
+.utility-page .contact-form>.btn{
+  min-height:60px;
+  margin-top:2.5rem;
+  padding:0 2.4rem;
+  border:1px solid #c78236;
+  border-radius:0;
+  background:rgba(8,3,1,.38);
+  color:#d8bea0;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:.82rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  transition:background .3s ease,border-color .3s ease,color .3s ease;
+}
+.utility-page .prose>.btn:hover,
+.utility-page .contact-form>.btn:hover{
+  border-color:#df7723;
+  background:#b94a08;
+  color:#f0d8bb;
+}
+
+.faq-page .utility-content{grid-template-columns:minmax(14rem,.42fr) minmax(0,1fr)}
+.utility-page .prose details{
+  padding:0;
+  border-top:1px solid var(--house-line);
+}
+.utility-page .prose details:last-of-type{border-bottom:1px solid var(--house-line)}
+.utility-page .prose summary{
+  min-height:92px;
+  padding:1.7rem 3.5rem 1.7rem 0;
+  display:flex;
+  align-items:center;
+  position:relative;
+  color:#dfc5a4;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.25rem,1.8vw,1.65rem);
+  line-height:1.3;
+  list-style:none;
+  cursor:pointer;
+}
+.utility-page .prose summary::-webkit-details-marker{display:none}
+.utility-page .prose summary::after{
+  content:'+';
+  position:absolute;
+  right:.15rem;
+  color:var(--house-accent);
+  font-family:Manrope,Arial,sans-serif;
+  font-size:1.1rem;
+  font-weight:300;
+  transition:transform .3s ease;
+}
+.utility-page .prose details[open] summary::after{transform:rotate(45deg)}
+.utility-page .prose details p{margin:0;padding:0 3.5rem 2rem 0}
+
+.contact-page .utility-content{grid-template-columns:minmax(16rem,.55fr) minmax(0,1fr)}
+.contact-facts{
+  margin-top:2.4rem;
+  padding-top:1.6rem;
+  border-top:1px solid var(--house-line);
+}
+.contact-facts p{
+  margin:0;
+  color:#a98f71;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:1.1rem;
+  line-height:1.65;
+}
+.contact-facts strong{
+  display:block;
+  margin-bottom:.45rem;
+  color:#d9bea0;
+  font-family:Manrope,Arial,sans-serif;
+  font-size:.62rem;
+  font-weight:500;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.utility-page .contact-form{min-width:0}
+.utility-page .form-grid{gap:1.7rem 1.6rem}
+.utility-page .field label{
+  margin-bottom:.35rem;
+  color:#a98f71;
+  font:500 .6rem/1.4 Manrope,Arial,sans-serif;
+  letter-spacing:.22em;
+}
+.utility-page .field input,
+.utility-page .field textarea,
+.utility-page .field select{
+  width:100%;
+  padding:1rem 0;
+  border:0;
+  border-bottom:1px solid rgba(213,168,112,.28);
+  border-radius:0;
+  background:transparent;
+  color:#e4ceb1;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:1.18rem;
+  transition:border-color .25s ease;
+}
+.utility-page .field input:focus,
+.utility-page .field textarea:focus,
+.utility-page .field select:focus{border-color:#c78236;outline:0}
+.utility-page .field select option{background:#160704;color:#e4ceb1}
+.utility-page .field textarea{min-height:150px}
+.utility-page .form-note{color:#c5a988}
+
+/* Store translated into the same dark editorial language */
+.house-page.store-page .store-hero{
+  min-height:74svh;
+  border-bottom:1px solid var(--house-line);
+  background:
+    radial-gradient(circle at 82% 34%,rgba(176,67,15,.26),transparent 35%),
+    radial-gradient(circle at 28% 84%,rgba(105,31,8,.2),transparent 36%),
+    linear-gradient(135deg,#080302 0%,#241006 58%,#080302 100%);
+}
+.house-page.store-page .store-hero h1{color:#ead6bb}
+.house-page.store-page .store-hero>p:not(.eyebrow){color:#cbb294}
+.house-page.store-page .store-fragrances{
+  color:var(--house-copy);
+  background:transparent;
+}
+.house-page.store-page .store-section-heading .eyebrow{color:var(--house-accent)}
+.house-page.store-page .store-section-heading h2{color:#ead6bb}
+.house-page.store-page .store-section-heading>p:not(.eyebrow){color:#c5a988}
+.house-page.store-page .store-grid{gap:clamp(1.5rem,2.5vw,2.7rem)}
+.house-page.store-page .store-card figure{
+  border-color:rgba(213,168,112,.16);
+  background:#160704;
+  box-shadow:0 26px 60px rgba(0,0,0,.42),0 5px 14px rgba(0,0,0,.25);
+}
+.house-page.store-page .store-card-meta .eyebrow{color:var(--house-accent)}
+.house-page.store-page .store-card-meta h3{color:#ead6bb}
+.house-page.store-page .store-card-meta>p:not(.eyebrow){color:#b99b7b}
+.house-page.store-page .store-card-meta strong{color:#d8bea0}
+.house-page.store-page .store-grid .store-card-meta .eyebrow{
+  white-space:nowrap;
+  font-size:clamp(.84rem,.9vw,1rem);
+  letter-spacing:.15em;
+}
+.store-note-pyramid{
+  margin:1.35rem 0 .35rem;
+  border-top:1px solid rgba(213,168,112,.2);
+  cursor:default;
+  user-select:text;
+}
+.store-note-pyramid>div{
+  min-height:3rem;
+  display:grid;
+  grid-template-columns:3.35rem minmax(0,1fr);
+  align-items:center;
+  gap:.65rem;
+  border-bottom:1px solid rgba(213,168,112,.16);
+}
+.store-note-pyramid dt{
+  color:var(--house-accent);
+  font-size:clamp(.8rem,.82vw,1.04rem);
+  font-weight:600;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+}
+.store-note-pyramid dd{
+  min-width:0;
+  margin:0;
+  overflow:visible;
+  color:#c9ad8b;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(.8rem,.82vw,1.04rem);
+  line-height:1;
+  letter-spacing:-.025em;
+  white-space:nowrap;
+}
+.house-page.store-page .store-grid .store-card-meta strong{
+  font-size:clamp(.88rem,.9vw,1rem);
+}
+.house-page.store-page .store-quantity{
+  border-color:rgba(213,168,112,.35);
+  color:#d8bea0;
+}
+.house-page.store-page .store-quantity button{color:#d8bea0}
+.house-page.store-page .store-quantity button:hover{background:rgba(195,117,50,.14)}
+.house-page.store-page .store-add{
+  min-height:52px;
+  border:1px solid #c78236;
+  background:rgba(8,3,1,.38);
+  color:#d8bea0;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  letter-spacing:.2em;
+}
+.house-page.store-page .store-add:hover{
+  border-color:#df7723;
+  background:#b94a08;
+  color:#f0d8bb;
+}
+.house-page.store-page .store-discovery{
+  border-top:1px solid var(--house-line);
+  background:
+    radial-gradient(circle at 72% 30%,rgba(112,37,11,.2),transparent 38%),
+    linear-gradient(140deg,#0b0403 0%,#210b05 56%,#090302 100%);
+}
+
+@media(max-width:850px){
+  .utility-hero{min-height:calc(100svh - 94px);padding:7.5rem 1.4rem 4.5rem}
+  .utility-hero h1{font-size:clamp(3.75rem,15vw,5.3rem)}
+  .utility-hero-lead{font-size:1.08rem}
+  .utility-content,
+  .faq-page .utility-content,
+  .contact-page .utility-content{
+    min-height:0;
+    padding:4.8rem 1.4rem 6rem;
+    grid-template-columns:1fr;
+    gap:3.5rem;
+  }
+  .utility-content-intro{position:static}
+  .utility-content-intro h2{font-size:clamp(2.8rem,11vw,4rem)}
+  .utility-page .prose summary{min-height:82px;padding:1.4rem 3rem 1.4rem 0}
+  .house-page.store-page .store-hero{min-height:calc(100svh - 94px)}
+}
+
+@media(max-width:520px){
+  .utility-hero{padding-left:1rem;padding-right:1rem}
+  .utility-hero h1{font-size:clamp(3.25rem,14.4vw,4.5rem)}
+  .utility-content,
+  .faq-page .utility-content,
+  .contact-page .utility-content{padding-left:1rem;padding-right:1rem}
+  .utility-page .prose>.btn,
+  .utility-page .contact-form>.btn{width:100%;min-height:56px}
+  .utility-page .prose details p{padding-right:.5rem}
+  .utility-page .form-grid{grid-template-columns:1fr}
+  .utility-page .field.full{grid-column:auto}
+  .house-page.store-page .store-fragrances,
+  .house-page.store-page .store-discovery{padding-left:1rem;padding-right:1rem}
+  .house-page.store-page .store-grid .store-card-meta .eyebrow{font-size:.82rem}
+  .store-note-pyramid>div{min-height:3.15rem;grid-template-columns:3.1rem minmax(0,1fr);gap:.5rem}
+  .store-note-pyramid dt,
+  .store-note-pyramid dd{font-size:.77rem}
+  .house-page.store-page .store-grid .store-card-meta strong{font-size:.9rem}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .utility-page .house-scroll-reveal,
+  .house-page.store-page .house-scroll-reveal{opacity:1;transform:none}
 }
