@@ -75,8 +75,16 @@
   const details=detailLink?`<a class="store-card-link" href="${p.slug}.html" aria-label="Discover ${p.name}">${figure}</a><div class="store-card-meta">${meta}</div>`:`<div class="store-card-link">${figure}<div class="store-card-meta">${meta}</div></div>`;
   return `<article class="store-card reveal" data-store-card>${details}<div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></article>`;
  }
+ function storeFragranceRowMarkup(p,index){
+  const direction=index%2?' store-fragrance-row-reverse':'';
+  return `<article class="store-card store-fragrance-row${direction} reveal" id="store-${p.slug}" data-store-card><a class="store-fragrance-media" href="${p.slug}.html" aria-label="Discover ${p.name}"><figure><img src="assets/images/${p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure></a><div class="store-fragrance-details"><div class="store-card-meta"><p class="eyebrow">${p.storeFamily||p.family}</p><h3><a class="store-card-title-link" href="${p.slug}.html">${p.name}</a></h3>${storeNotesMarkup(p)}<strong>${priceLabel(p)}</strong></div><div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></div></article>`;
+ }
  const storeFragrances=$('[data-store-fragrances]');
- if(storeFragrances)storeFragrances.innerHTML=products.map(p=>storeCardMarkup(p,true)).join('');
+ if(storeFragrances){
+  storeFragrances.innerHTML=products.map((p,index)=>storeFragranceRowMarkup(p,index)).join('');
+  const storeTarget=document.getElementById(location.hash.slice(1));
+  if(storeTarget)requestAnimationFrame(()=>storeTarget.scrollIntoView({block:'start'}));
+ }
  const storeDiscovery=$('[data-store-discovery]');
  if(storeDiscovery&&window.HERISAIR_DISCOVERY_SET)storeDiscovery.innerHTML=storeCardMarkup(window.HERISAIR_DISCOVERY_SET,false);
  const detail=$('[data-product-detail]'); if(detail){const slug=document.body.dataset.product,p=products.find(x=>x.slug===slug);if(p){detail.innerHTML=`<section class="product-detail-hero"><div class="product-visual"><img src="assets/images/${p.image}" alt="Hérisair ${p.name} fragrance bottle"></div><div class="product-buy"><p class="eyebrow">${p.number} · ${p.family}</p><h1>${p.name}</h1><p class="product-tagline">${p.tagline}</p><p>${p.description}</p><div class="price">AED ${p.price}</div><button class="btn" data-add="${p.slug}">Add to bag</button><p class="micro">Complimentary UAE delivery · Secure checkout</p></div></section><section class="notes"><div><p class="eyebrow">The composition</p><h2>${p.character}</h2><p>${p.description}</p><ol>${p.notes.map((n,i)=>`<li><span>0${i+1}</span>${n}</li>`).join('')}</ol></div><img src="assets/images/${p.detail}" loading="lazy" alt="The notes of ${p.name}"></section><section class="ritual-banner" style="background-image:url('assets/images/${p.interior}')"><div><p class="eyebrow">The private atmosphere</p><h2>Composed for<br>the journey within</h2></div></section>`}}
@@ -114,6 +122,32 @@
   };
   window.addEventListener('scroll',handleHomeSectionScroll,{passive:true});
   window.addEventListener('resize',handleHomeSectionScroll,{passive:true});
+ }
+ const homeChapterSections=$$('.home .home-chapter-scroll');
+ if(homeChapterSections.length){
+  let homeChaptersTicking=false;
+  const updateHomeChapters=()=>{
+   homeChaptersTicking=false;
+   let activeSection=null;
+   let greatestVisibleArea=0;
+   homeChapterSections.forEach(section=>{
+    const rect=section.getBoundingClientRect();
+    const visibleArea=Math.max(0,Math.min(rect.bottom,window.innerHeight)-Math.max(rect.top,0));
+    if(visibleArea>greatestVisibleArea){
+     greatestVisibleArea=visibleArea;
+     activeSection=section;
+    }
+   });
+   const minimumVisibleArea=Math.min(window.innerHeight*.18,(activeSection?.getBoundingClientRect().height||0)*.22);
+   if(greatestVisibleArea<minimumVisibleArea)activeSection=null;
+   homeChapterSections.forEach(section=>section.classList.toggle('in',section===activeSection));
+  };
+  const handleHomeChapterScroll=()=>{
+   if(!homeChaptersTicking){homeChaptersTicking=true;requestAnimationFrame(updateHomeChapters)}
+  };
+  updateHomeChapters();
+  window.addEventListener('scroll',handleHomeChapterScroll,{passive:true});
+  window.addEventListener('resize',handleHomeChapterScroll,{passive:true});
  }
  const houseScrollSections=$$('.house-page main>section.house-scroll-reveal');
  if(houseScrollSections.length){

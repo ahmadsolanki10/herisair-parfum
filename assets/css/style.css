@@ -347,6 +347,125 @@
   .collection-page .collection-formula-points span+span{border-top:1px solid rgba(85,38,16,.28);border-left:0}
 }
 
+/* Store fragrances — alternating Collection-page editorial rhythm */
+.house-page.store-page .store-fragrances{
+  width:min(100%,118rem);
+  margin:0 auto;
+}
+.house-page.store-page .store-fragrances .store-section-heading{
+  margin-bottom:clamp(1.5rem,3vw,3rem);
+}
+.house-page.store-page .store-fragrances .store-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+}
+.house-page.store-page .store-fragrance-row{
+  min-height:calc(100svh - 4.8rem);
+  scroll-margin-top:5.5rem;
+  padding:clamp(4.25rem,6vw,6.75rem) 0;
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+  gap:clamp(2.75rem,5vw,6.5rem);
+  align-items:center;
+  border-top:1px solid var(--house-line);
+}
+.house-page.store-page .store-fragrance-row:first-child{border-top:0}
+.house-page.store-page .store-fragrance-row-reverse{
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+}
+.house-page.store-page .store-fragrance-row-reverse .store-fragrance-media{
+  grid-column:2;
+  grid-row:1;
+}
+.house-page.store-page .store-fragrance-row-reverse .store-fragrance-details{
+  grid-column:1;
+  grid-row:1;
+}
+.house-page.store-page .store-fragrance-media{
+  display:block;
+  min-width:0;
+  color:inherit;
+  text-decoration:none;
+}
+.house-page.store-page .store-fragrance-media figure{
+  width:100%;
+  height:clamp(28rem,63svh,42rem);
+  aspect-ratio:auto;
+  margin:0;
+  transform:translateY(-4px);
+}
+.house-page.store-page .store-fragrance-media:hover figure img{transform:scale(1.025)}
+.house-page.store-page .store-fragrance-details{
+  width:100%;
+  max-width:40rem;
+  min-width:0;
+  padding:clamp(1.25rem,2.5vw,2.5rem) 0;
+}
+.house-page.store-page .store-fragrance-details .store-card-meta{padding:0 0 2rem}
+.house-page.store-page .store-fragrance-details .store-card-meta h3{
+  margin:.85rem 0 0;
+  font-size:clamp(4rem,6vw,7.25rem);
+  line-height:.86;
+  letter-spacing:-.04em;
+}
+.house-page.store-page .store-fragrance-details .store-note-pyramid{margin-top:2rem}
+.house-page.store-page .store-fragrance-details .store-card-meta strong{
+  margin-top:1.8rem;
+  font-size:clamp(.88rem,.9vw,1rem);
+}
+.house-page.store-page .store-fragrance-details .store-purchase{
+  grid-template-columns:minmax(8rem,.72fr) minmax(13rem,1.28fr);
+  gap:1rem;
+}
+
+@media(max-width:850px){
+  .house-page.store-page .store-fragrances .store-section-heading{margin-bottom:1rem}
+  .house-page.store-page .store-fragrance-row,
+  .house-page.store-page .store-fragrance-row-reverse{
+    min-height:0;
+    padding:4.75rem 0 5.5rem;
+    grid-template-columns:1fr;
+    gap:2.75rem;
+  }
+  .house-page.store-page .store-fragrance-row .store-fragrance-media,
+  .house-page.store-page .store-fragrance-row-reverse .store-fragrance-media{
+    grid-column:auto;
+    grid-row:auto;
+    order:1;
+  }
+  .house-page.store-page .store-fragrance-row .store-fragrance-details,
+  .house-page.store-page .store-fragrance-row-reverse .store-fragrance-details{
+    grid-column:auto;
+    grid-row:auto;
+    order:2;
+    max-width:38rem;
+    padding:1rem .2rem 0;
+  }
+  .house-page.store-page .store-fragrance-media figure{
+    height:auto;
+    aspect-ratio:6/5;
+    transform:none;
+  }
+  .house-page.store-page .store-fragrance-details .store-card-meta h3{
+    font-size:clamp(3.7rem,15vw,5.7rem);
+  }
+}
+
+@media(max-width:520px){
+  .house-page.store-page .store-fragrance-row,
+  .house-page.store-page .store-fragrance-row-reverse{
+    padding:4rem 0 4.75rem;
+    gap:2.35rem;
+  }
+  .house-page.store-page .store-fragrance-media figure{
+    aspect-ratio:6/5;
+    border-radius:14px;
+  }
+  .house-page.store-page .store-fragrance-details{padding-left:.15rem;padding-right:.15rem}
+  .house-page.store-page .store-fragrance-details .store-purchase{grid-template-columns:1fr}
+}
+
 /* Global footer without newsletter/private-list signup */
 @media(min-width:851px){
   footer .footer-grid{grid-template-columns:minmax(15rem,1.7fr) repeat(4,minmax(0,1fr))}
@@ -514,19 +633,16 @@
     transition:none;
   }
   .home .chapters.scroll-reveal .chapters-intro,
-  .home .chapters.scroll-reveal .chapter-card{
+  .home .chapters .home-chapter-scroll{
     opacity:0;
     transform:translateY(22px);
     transition:opacity .64s cubic-bezier(.2,.65,.25,1),transform .64s cubic-bezier(.2,.65,.25,1);
   }
   .home .chapters.scroll-reveal.in .chapters-intro,
-  .home .chapters.scroll-reveal.in .chapter-card{
+  .home .chapters .home-chapter-scroll.in{
     opacity:1;
     transform:translateY(0);
   }
-  .home .chapters.scroll-reveal.in .chapter-card:nth-child(1){transition-delay:.08s}
-  .home .chapters.scroll-reveal.in .chapter-card:nth-child(2){transition-delay:.14s}
-  .home .chapters.scroll-reveal.in .chapter-card:nth-child(3){transition-delay:.2s}
 }
 
 /* Global fixed house header */
@@ -1609,9 +1725,14 @@
   .home .chapters-heading{text-align:left}
   .home .chapter-title-group i{display:none}
   .home .chapters-heading>p{
-    margin-left:auto;
-    margin-right:auto;
-    text-align:center;
+    max-width:31rem;
+    margin-left:0;
+    margin-right:0;
+    font-size:clamp(1.02rem,4.45vw,1.16rem);
+    line-height:1.55;
+    letter-spacing:.005em;
+    text-align:left;
+    text-transform:none;
   }
   .home .chapter-copy{
     align-items:flex-start;
@@ -2137,16 +2258,121 @@
   border-bottom:1px solid #df7723;
   color:#f0d9bc;
 }
+
+/* Homepage collection — alternating editorial chapters */
+.home .chapter-grid{
+  display:flex;
+  flex-direction:column;
+  gap:clamp(4.5rem,8vw,8rem);
+  max-width:92rem;
+  margin:clamp(3.25rem,5vw,5rem) auto 0;
+}
+.home .chapter-card{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(20rem,.92fr);
+  align-items:center;
+  gap:clamp(3rem,7vw,8.5rem);
+  overflow:visible;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.home .chapter-card:nth-child(even) .chapter-card-media{order:2}
+.home .chapter-card:nth-child(even) .chapter-copy{order:1}
+.home .chapter-card-media{
+  display:block;
+  overflow:hidden;
+  border:1px solid rgba(226,177,122,.16);
+  border-radius:clamp(16px,1.6vw,24px);
+  box-shadow:0 30px 68px rgba(0,0,0,.46),0 6px 18px rgba(0,0,0,.28);
+}
+.home .chapter-card .chapter-card-media img{
+  display:block;
+  width:100%;
+  aspect-ratio:6/5;
+  object-fit:cover;
+  object-position:center;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  transform:none;
+  transition:transform .9s cubic-bezier(.2,.65,.25,1),filter .9s ease;
+}
+.home .chapter-card-media:hover img{
+  transform:scale(1.025);
+  filter:brightness(1.035);
+}
+.home .chapter-copy{
+  min-width:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  text-align:left;
+}
+.home .chapter-copy h3{
+  margin:0;
+  font-size:clamp(3.8rem,6vw,7.3rem);
+  font-weight:500;
+  line-height:.88;
+  letter-spacing:-.035em;
+}
+.home .chapter-story{
+  max-width:36rem;
+  margin:clamp(1.6rem,2.5vw,2.5rem) 0 0;
+  font-size:clamp(1.05rem,1.35vw,1.42rem);
+  line-height:1.6;
+  letter-spacing:.005em;
+  text-transform:none;
+}
+.home .chapter-card .discover-link{
+  margin-top:clamp(1.7rem,2.75vw,2.8rem);
+  align-self:flex-start;
+}
 @media(max-width:850px){
   .home .quiz-promo h2{font-size:clamp(2rem,8.3vw,2.7rem)}
+  .home .chapter-grid{gap:4.75rem;margin-top:3.25rem}
+  .home .chapter-card{
+    grid-template-columns:minmax(0,1fr);
+    gap:1.85rem;
+  }
+  .home .chapter-card:nth-child(even) .chapter-card-media,
+  .home .chapter-card:nth-child(even) .chapter-copy{order:initial}
+  .home .chapter-card .chapter-card-media img{aspect-ratio:6/5}
+  .home .chapter-copy{
+    padding:0 .15rem;
+    align-items:flex-start;
+    text-align:left;
+  }
+  .home .chapter-copy h3{
+    width:auto;
+    font-size:clamp(3.6rem,15vw,5.8rem);
+    text-align:left;
+  }
+  .home .chapter-story{
+    max-width:31rem;
+    margin-top:1.35rem;
+    font-size:clamp(1.02rem,4.6vw,1.2rem);
+    line-height:1.55;
+  }
+  .home .chapter-card .discover-link{
+    width:max-content;
+    margin-top:1.45rem;
+    align-self:flex-start;
+  }
 }
 @media(max-width:520px){
   .home .quiz-promo h2{font-size:clamp(1.9rem,8.15vw,2.55rem)}
-  .home .chapter-card .discover-link,
   .home .house-intro-cta{
     width:max-content;
     align-self:center;
   }
+  .home .chapters{padding-left:1.25rem;padding-right:1.25rem}
+  .home .chapter-grid{gap:4.25rem}
+  .home .chapter-card{width:100%;max-width:100%}
+  .home .chapter-card-media{width:100%;border-radius:14px}
+  .home .chapter-copy{width:100%;max-width:100%}
 }
 
 /* Scent consultation — House/Collection editorial system */
