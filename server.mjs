@@ -153,6 +153,60 @@ async function createCheckoutSession(request, response) {
   }
 }
 
+async function getCheckoutSession(request, response) {
+  if (request.method !== "GET") {
+    sendJson(response, 405, { error: "Method not allowed" });
+    return;
+  }
+
+  const requestUrl = new URL(request.url, "http://localhost");
+  const sessionId = requestUrl.searchParams.get("session_id") || "";
+  if (!/^cs_(?:test_|live_)?[A-Za-z0-9]+$/.test(sessionId) || sessionId.length > 255) {
+    sendJson(response, 400, { error: "A valid checkout reference is required" });
+    return;
+  }
+
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeSecretKey) {
+    sendJson(response, 503, { error: "Order confirmation is not yet available" });
+    return;
+  }
+
+  try {
+    const stripeResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, {
+      headers: { authorization: `Bearer ${stripeSecretKey}` }
+    });
+    const session = await stripeResponse.json();
+
+    if (!stripeResponse.ok) {
+      console.error("Stripe Checkout session could not be retrieved", session?.error?.type || stripeResponse.status);
+      sendJson(response, 404, { error: "This order confirmation could not be found" });
+      return;
+    }
+
+    const isComplete = session.status === "complete";
+    const isPaid = session.payment_status === "paid" || session.payment_status === "no_payment_required";
+    if (!isComplete || !isPaid) {
+      sendJson(response, 409, { error: "Payment confirmation is still being processed" });
+      return;
+    }
+
+    const paymentIntent = typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : session.payment_intent?.id;
+
+    sendJson(response, 200, {
+      transactionId: paymentIntent || session.id,
+      amountTotal: session.amount_total,
+      currency: session.currency,
+      paymentStatus: session.payment_status
+    });
+  } catch (error) {
+    console.error("Order confirmation request failed", error instanceof Error ? error.message : "Unknown error");
+    sendJson(response, 502, { error: "Order confirmation is temporarily unavailable" });
+  }
+}
+
 function verifyStripeSignature(payload, signatureHeader, secret) {
   if (!signatureHeader || !secret) return false;
   const values = signatureHeader.split(",").map(value => value.trim().split("="));
@@ -202,6 +256,10 @@ createServer(async (request, response) => {
   }
   if (pathname === "/api/create-checkout-session") {
     await createCheckoutSession(request, response);
+    return;
+  }
+  if (pathname === "/api/checkout-session") {
+    await getCheckoutSession(request, response);
     return;
   }
   if (pathname === "/api/stripe-webhook") {

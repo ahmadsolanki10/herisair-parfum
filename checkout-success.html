@@ -6,7 +6,7 @@
   <title>Order Received | Hérisair</title>
   <meta name="description" content="Your Hérisair order has been received.">
   <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="assets/css/style.css?v=20260905-stripe-checkout-v1">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260906-order-confirmation-v1">
 </head>
 <body class="house-page utility-page checkout-status-page" data-checkout-status="success">
   <header data-header></header>
@@ -25,13 +25,17 @@
       <article class="prose">
         <h2>What happens now</h2>
         <p>We will prepare your selection and contact you using the details provided at checkout if anything further is required.</p>
-        <p>Please retain your Stripe confirmation for your records.</p>
+        <div class="checkout-reference" data-checkout-reference aria-live="polite">
+          <p class="eyebrow">Transaction ID</p>
+          <p class="checkout-reference-value" data-transaction-id>Retrieving securely…</p>
+        </div>
+        <p>A payment confirmation will be sent to the email address used during secure checkout. Please retain it for your records.</p>
         <a class="btn" href="collection.html">Return to the collection</a>
       </article>
     </section>
   </main>
   <footer data-footer></footer>
-  <script src="assets/js/products.js?v=20260905-stripe-checkout-v1"></script>
-  <script src="assets/js/main.js?v=20260905-stripe-checkout-v1"></script>
+  <script src="assets/js/products.js?v=20260906-order-confirmation-v1"></script>
+  <script src="assets/js/main.js?v=20260906-order-confirmation-v1"></script>
 </body>
 </html>

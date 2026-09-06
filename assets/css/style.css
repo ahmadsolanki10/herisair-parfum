@@ -2715,6 +2715,32 @@ body.house-page.store-page{
   line-height:1.65;
 }
 .utility-page .prose strong{color:#dfc5a4;font-weight:600}
+.checkout-reference{
+  max-width:52rem;
+  margin:2rem 0 .7rem;
+  padding:1.25rem 0 1.35rem;
+  border-top:1px solid var(--house-line);
+  border-bottom:1px solid var(--house-line);
+}
+.utility-page .prose .checkout-reference .eyebrow{
+  margin:0 0 .65rem;
+  color:#c6782e;
+  font-family:Manrope,Arial,sans-serif;
+  font-size:.72rem;
+  line-height:1.4;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+}
+.utility-page .prose .checkout-reference-value{
+  max-width:none;
+  margin:0;
+  color:#e4ceb1;
+  font-family:Manrope,Arial,sans-serif;
+  font-size:clamp(.9rem,1.15vw,1.05rem);
+  line-height:1.5;
+  letter-spacing:.06em;
+  overflow-wrap:anywhere;
+}
 .utility-page .prose>.btn,
 .utility-page .contact-form>.btn{
   min-height:60px;

@@ -182,6 +182,18 @@
   bag=[];
   localStorage.removeItem('herisairBag');
   renderBag();
+  const transactionId=$('[data-transaction-id]');
+  const sessionId=new URLSearchParams(location.search).get('session_id')||'';
+  if(transactionId){
+   if(!/^cs_(?:test_|live_)?[A-Za-z0-9]+$/.test(sessionId)){
+    transactionId.textContent='Please refer to your Stripe payment confirmation';
+   }else{
+    fetch(`/api/checkout-session?session_id=${encodeURIComponent(sessionId)}`)
+     .then(async response=>{const result=await response.json();if(!response.ok||!result.transactionId)throw new Error(result.error);return result})
+     .then(result=>{transactionId.textContent=result.transactionId})
+     .catch(()=>{transactionId.textContent='Please refer to your Stripe payment confirmation'});
+   }
+  }
  }
  if(new URLSearchParams(location.search).get('checkout')==='cancelled')showToast('Your selection has been kept. Checkout was not completed.');
  const checkout=$('.checkout');if(checkout)checkout.onclick=async()=>{
