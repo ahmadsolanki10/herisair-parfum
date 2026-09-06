@@ -3110,6 +3110,10 @@ body.house-page.store-page{
   background:#b94a08;
   color:#f0d8bb;
 }
+.bag-total .checkout:disabled{
+  cursor:wait;
+  opacity:.62;
+}
 .bag-total small{
   color:#9f7d62;
   font:400 .66rem/1.55 Manrope,Arial,sans-serif;

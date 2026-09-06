@@ -7,7 +7,7 @@
  if(header) header.innerHTML=`<a class="skip" href="#main">Skip to content</a><div class="notice">Complimentary UAE delivery on the inaugural collection</div><div class="nav"><button class="menu" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button><a class="brand" href="index.html" aria-label="Hérisair home"><img src="assets/images/herisair-header-logo.png" alt="Hérisair"></a><nav aria-label="Main navigation"><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><div class="shop-menu"><button type="button" class="shop-trigger" aria-haspopup="true">Discover</button><div class="shop-dropdown"><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a></div></div><a href="store.html">Store</a></nav><div class="nav-actions"><a class="nav-icon" href="contact.html" aria-label="Client account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"></circle><path d="M5.5 20c.5-4 2.7-6 6.5-6s6 2 6.5 6"></path></svg></a><button class="bag-open nav-icon" aria-label="Open shopping bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h14l1 12H4l1-12Z"></path><path d="M9 9V6.5a3 3 0 0 1 6 0V9"></path></svg><span class="sr-only" data-bag-count>0</span></button></div></div><div class="mobile-nav"><div class="mobile-nav-panel" data-mobile-menu-main><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><button type="button" class="mobile-discover-open" aria-expanded="false">Discover <span aria-hidden="true">→</span></button><a href="store.html">Store</a><a href="contact.html">Client care</a></div><div class="mobile-nav-panel mobile-nav-discover" data-mobile-menu-discover hidden><button type="button" class="mobile-discover-back"><span aria-hidden="true">←</span> Back</button><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a></div></div>`;
  const footer=$('[data-footer]');
  if(footer) footer.innerHTML=`<div class="footer-grid"><div><a class="brand" href="index.html">HÉRISAIR</a><p>Automotive fragrance,<br>composed in the UAE.</p></div><div><b>Explore</b><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><a href="quiz.html">Scent Discovery</a></div><div><b>Contact Us</b><a href="contact.html">Contact</a><a href="faq.html">Care & FAQs</a><a href="shipping.html">Shipping & delivery</a><a href="returns.html">Returns</a></div><div><b>Socials</b><a href="https://www.instagram.com/herisair.parfum/" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://www.tiktok.com/@herisair.parfum" target="_blank" rel="noopener noreferrer">TikTok</a></div><div><b>Legal</b><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="cookies.html">Cookies</a></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Hérisair</span><span>Dubai, United Arab Emirates</span></div>`;
- document.body.insertAdjacentHTML('beforeend',`<aside class="bag" aria-hidden="true"><div class="bag-head"><h2>Your selection</h2><button class="bag-close" aria-label="Close shopping bag">×</button></div><div class="bag-items"></div><div class="bag-total"><span>Total</span><strong data-total>AED 0</strong><button class="btn checkout">Proceed to secure checkout</button><small>Checkout connection required before launch.</small></div></aside><div class="scrim"></div><div class="toast" role="status"></div>`);
+ document.body.insertAdjacentHTML('beforeend',`<aside class="bag" aria-hidden="true"><div class="bag-head"><h2>Your selection</h2><button class="bag-close" aria-label="Close shopping bag">×</button></div><div class="bag-items"></div><div class="bag-total"><span>Subtotal</span><strong data-total>AED 0</strong><button class="btn checkout">Proceed to secure checkout</button><small>VAT included · Delivery selected at secure checkout</small></div></aside><div class="scrim"></div><div class="toast" role="status"></div>`);
  const menu=$('.menu');
  const mobileMenuMain=$('[data-mobile-menu-main]');
  const mobileMenuDiscover=$('[data-mobile-menu-discover]');
@@ -176,7 +176,31 @@
   window.addEventListener('resize',handleHouseSectionScroll,{passive:true});
  }
  const contact=$('[data-contact]');if(contact)contact.onsubmit=async e=>{e.preventDefault();const note=$('.form-note',contact),btn=$('button',contact);if(!contact.checkValidity()){contact.reportValidity();return}btn.disabled=true;btn.textContent='Sending…';try{const endpoint=contact.dataset.endpoint;if(!endpoint)throw Error();const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(contact)))});if(!res.ok)throw Error();note.textContent='Thank you. A client advisor will be in touch shortly.';contact.reset()}catch{note.textContent='The form is ready, but its secure mail connection must be configured before launch.'}finally{btn.disabled=false;btn.textContent='Send enquiry'}};
- const checkout=$('.checkout');if(checkout)checkout.onclick=()=>{const toast=$('.toast');toast.textContent=bag.length?'Secure checkout must be connected before orders can be accepted.':'Your selection is empty.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3500)};
+ const toast=$('.toast');
+ const showToast=message=>{if(!toast)return;toast.textContent=message;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3500)};
+ if(document.body.dataset.checkoutStatus==='success'){
+  bag=[];
+  localStorage.removeItem('herisairBag');
+  renderBag();
+ }
+ if(new URLSearchParams(location.search).get('checkout')==='cancelled')showToast('Your selection has been kept. Checkout was not completed.');
+ const checkout=$('.checkout');if(checkout)checkout.onclick=async()=>{
+  if(!bag.length){showToast('Your selection is empty.');return}
+  if(location.protocol==='file:'){showToast('Secure checkout is available on the live website.');return}
+  const originalLabel=checkout.textContent;
+  checkout.disabled=true;
+  checkout.textContent='Preparing secure checkout…';
+  try{
+   const response=await fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:bag.map(({slug,qty})=>({slug,qty}))})});
+   const result=await response.json();
+   if(!response.ok||!result.url)throw new Error(result.error||'Secure checkout could not be opened');
+   location.assign(result.url);
+  }catch(error){
+   showToast(error.message||'Secure checkout could not be opened. Please try again.');
+   checkout.disabled=false;
+   checkout.textContent=originalLabel;
+  }
+ };
  const quiz=$('[data-quiz]');if(quiz){
   let step=0,scores={unity:0,ascent:0,eminence:0};
   const questions=[

@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
@@ -5,6 +6,20 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 3000);
+const productionSiteUrl = "https://herisair-parfum-production.up.railway.app";
+
+const stripeCatalog = {
+  unity: process.env.STRIPE_PRICE_UNITY || "price_1UCHCIKIWkWSAwgQP2hBgFyd",
+  ascent: process.env.STRIPE_PRICE_ASCENT || "price_1UCHEhKIWkWSAwgQaFxosM9o",
+  eminence: process.env.STRIPE_PRICE_EMINENCE || "price_1UCHFrKIWkWSAwgQNF6baBDd"
+};
+
+const stripeTaxRate = process.env.STRIPE_TAX_RATE_UAE || "txr_1UCHZPKIWkWSAwgQt6ghQaLw";
+const stripeShippingRates = [
+  process.env.STRIPE_SHIPPING_STANDARD || "shr_1UCHNqKIWkWSAwgQ7Y5ixj6s",
+  process.env.STRIPE_SHIPPING_FOUNDER_UAE || "shr_1UCHWRKIWkWSAwgQhPmHRrY5",
+  process.env.STRIPE_SHIPPING_FOUNDER_GCC || "shr_1UCHXQKIWkWSAwgQqtRoEqsL"
+].filter(Boolean);
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
@@ -20,14 +35,186 @@ const contentTypes = {
   ".xml": "application/xml; charset=utf-8"
 };
 
-createServer((request, response) => {
-  if (request.url === "/health") {
-    response.writeHead(200, { "content-type": "application/json" });
-    response.end('{"status":"ok"}');
+function sendJson(response, status, payload) {
+  response.writeHead(status, {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store"
+  });
+  response.end(JSON.stringify(payload));
+}
+
+function readRequestBody(request, maximumBytes = 16_384) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+
+    request.on("data", chunk => {
+      size += chunk.length;
+      if (size > maximumBytes) {
+        reject(new Error("Request body is too large"));
+        request.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    request.on("end", () => resolve(Buffer.concat(chunks)));
+    request.on("error", reject);
+  });
+}
+
+function siteUrlFor(request) {
+  const configuredUrl = (process.env.PUBLIC_SITE_URL || productionSiteUrl).replace(/\/$/, "");
+  const host = request.headers.host || "";
+  return /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(host) ? `http://${host}` : configuredUrl;
+}
+
+function normaliseCart(items) {
+  if (!Array.isArray(items)) return [];
+
+  const quantities = new Map();
+  for (const item of items) {
+    const slug = String(item?.slug || "").toLowerCase();
+    const quantity = Number(item?.qty);
+    if (!stripeCatalog[slug] || !Number.isInteger(quantity) || quantity < 1 || quantity > 20) continue;
+    quantities.set(slug, Math.min(20, (quantities.get(slug) || 0) + quantity));
+  }
+
+  return [...quantities].map(([slug, quantity]) => ({ slug, quantity }));
+}
+
+async function createCheckoutSession(request, response) {
+  if (request.method !== "POST") {
+    sendJson(response, 405, { error: "Method not allowed" });
     return;
   }
 
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeSecretKey) {
+    sendJson(response, 503, { error: "Secure checkout is not yet available" });
+    return;
+  }
+
+  try {
+    const rawBody = await readRequestBody(request);
+    const cart = normaliseCart(JSON.parse(rawBody.toString("utf8"))?.items);
+    if (!cart.length) {
+      sendJson(response, 400, { error: "Your selection is empty" });
+      return;
+    }
+
+    const siteUrl = siteUrlFor(request);
+    const form = new URLSearchParams({
+      mode: "payment",
+      success_url: `${siteUrl}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}/store.html?checkout=cancelled`,
+      customer_creation: "always",
+      billing_address_collection: "required",
+      "phone_number_collection[enabled]": "true",
+      submit_type: "pay",
+      locale: "en",
+      "metadata[order_source]": "herisair_website",
+      "payment_intent_data[metadata][order_source]": "herisair_website"
+    });
+
+    ["AE", "BH", "KW", "OM", "QA", "SA"].forEach((country, index) => {
+      form.set(`shipping_address_collection[allowed_countries][${index}]`, country);
+    });
+
+    cart.forEach((item, index) => {
+      form.set(`line_items[${index}][price]`, stripeCatalog[item.slug]);
+      form.set(`line_items[${index}][quantity]`, String(item.quantity));
+      form.set(`line_items[${index}][tax_rates][0]`, stripeTaxRate);
+    });
+
+    stripeShippingRates.forEach((shippingRate, index) => {
+      form.set(`shipping_options[${index}][shipping_rate]`, shippingRate);
+    });
+
+    const stripeResponse = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${stripeSecretKey}`,
+        "content-type": "application/x-www-form-urlencoded"
+      },
+      body: form
+    });
+    const session = await stripeResponse.json();
+
+    if (!stripeResponse.ok || !session.url) {
+      console.error("Stripe Checkout session could not be created", session?.error?.type || stripeResponse.status);
+      sendJson(response, 502, { error: "Secure checkout could not be opened. Please try again" });
+      return;
+    }
+
+    sendJson(response, 200, { url: session.url });
+  } catch (error) {
+    console.error("Checkout request failed", error instanceof Error ? error.message : "Unknown error");
+    sendJson(response, 400, { error: "We could not prepare checkout. Please try again" });
+  }
+}
+
+function verifyStripeSignature(payload, signatureHeader, secret) {
+  if (!signatureHeader || !secret) return false;
+  const values = signatureHeader.split(",").map(value => value.trim().split("="));
+  const timestamp = values.find(([key]) => key === "t")?.[1];
+  const signatures = values.filter(([key]) => key === "v1").map(([, value]) => value);
+  if (!timestamp || !signatures.length || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
+
+  const expected = createHmac("sha256", secret).update(`${timestamp}.${payload}`).digest("hex");
+  const expectedBuffer = Buffer.from(expected, "hex");
+  return signatures.some(signature => {
+    const suppliedBuffer = Buffer.from(signature, "hex");
+    return suppliedBuffer.length === expectedBuffer.length && timingSafeEqual(suppliedBuffer, expectedBuffer);
+  });
+}
+
+async function handleStripeWebhook(request, response) {
+  if (request.method !== "POST") {
+    sendJson(response, 405, { error: "Method not allowed" });
+    return;
+  }
+
+  try {
+    const body = await readRequestBody(request, 1_048_576);
+    const payload = body.toString("utf8");
+    if (!verifyStripeSignature(payload, request.headers["stripe-signature"], process.env.STRIPE_WEBHOOK_SECRET)) {
+      sendJson(response, 400, { error: "Invalid webhook signature" });
+      return;
+    }
+
+    const event = JSON.parse(payload);
+    if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+      console.log(`Paid Stripe order received: ${event.data?.object?.id || event.id}`);
+    }
+    sendJson(response, 200, { received: true });
+  } catch (error) {
+    console.error("Stripe webhook failed", error instanceof Error ? error.message : "Unknown error");
+    sendJson(response, 400, { error: "Webhook could not be processed" });
+  }
+}
+
+createServer(async (request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
+
+  if (pathname === "/health") {
+    sendJson(response, 200, { status: "ok" });
+    return;
+  }
+  if (pathname === "/api/create-checkout-session") {
+    await createCheckoutSession(request, response);
+    return;
+  }
+  if (pathname === "/api/stripe-webhook") {
+    await handleStripeWebhook(request, response);
+    return;
+  }
+
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    response.writeHead(405, { "content-type": "text/plain; charset=utf-8" });
+    response.end("Method not allowed");
+    return;
+  }
+
   const relativePath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
   const safePath = normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, "");
   let filePath = join(root, safePath);
@@ -46,6 +233,10 @@ createServer((request, response) => {
     "content-type": contentTypes[extname(filePath).toLowerCase()] || "application/octet-stream",
     "cache-control": extname(filePath) === ".html" ? "no-cache" : "public, max-age=604800"
   });
+  if (request.method === "HEAD") {
+    response.end();
+    return;
+  }
   createReadStream(filePath).pipe(response);
 }).listen(port, "0.0.0.0", () => {
   console.log(`Hérisair is running on port ${port}`);
