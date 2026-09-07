@@ -3,6 +3,7 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import nodemailer from "nodemailer";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 3000);
@@ -48,6 +49,16 @@ const stripeShippingRates = [
   process.env.STRIPE_SHIPPING_FOUNDER_GCC || "shr_1UCHXQKIWkWSAwgQqtRoEqsL"
 ].filter(Boolean);
 
+const contactDestination = process.env.CONTACT_TO_EMAIL || "info@herisair.com";
+const contactRateLimits = new Map();
+const allowedContactSubjects = new Set([
+  "Fragrance guidance",
+  "Order assistance",
+  "Gifting",
+  "Partnership",
+  "Other"
+]);
+
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -87,6 +98,160 @@ function readRequestBody(request, maximumBytes = 16_384) {
     request.on("end", () => resolve(Buffer.concat(chunks)));
     request.on("error", reject);
   });
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function cleanContactValue(value, maximumLength) {
+  return String(value || "")
+    .replace(/\r\n?/g, "\n")
+    .trim()
+    .slice(0, maximumLength);
+}
+
+function clientAddressFor(request) {
+  return String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "unknown")
+    .split(",")[0]
+    .trim();
+}
+
+function contactRateLimitExceeded(request) {
+  const address = clientAddressFor(request);
+  const now = Date.now();
+  const windowStart = now - 15 * 60 * 1000;
+  const recentRequests = (contactRateLimits.get(address) || []).filter(timestamp => timestamp > windowStart);
+
+  if (recentRequests.length >= 5) return true;
+  recentRequests.push(now);
+  contactRateLimits.set(address, recentRequests);
+
+  if (contactRateLimits.size > 500) {
+    for (const [key, timestamps] of contactRateLimits) {
+      if (!timestamps.some(timestamp => timestamp > windowStart)) contactRateLimits.delete(key);
+    }
+  }
+  return false;
+}
+
+function requestOriginIsAllowed(request) {
+  const origin = request.headers.origin;
+  if (!origin) return true;
+  try {
+    return new URL(origin).host === request.headers.host;
+  } catch {
+    return false;
+  }
+}
+
+async function handleContactEnquiry(request, response) {
+  if (request.method !== "POST") {
+    sendJson(response, 405, { error: "Method not allowed" });
+    return;
+  }
+  if (!requestOriginIsAllowed(request)) {
+    sendJson(response, 403, { error: "This enquiry could not be accepted" });
+    return;
+  }
+  if (contactRateLimitExceeded(request)) {
+    sendJson(response, 429, { error: "Please wait before sending another enquiry" });
+    return;
+  }
+
+  try {
+    const rawBody = await readRequestBody(request);
+    const body = JSON.parse(rawBody.toString("utf8"));
+
+    // Silently accept honeypot submissions so automated senders receive no useful signal.
+    if (cleanContactValue(body.website, 200)) {
+      sendJson(response, 200, { delivered: true });
+      return;
+    }
+
+    const name = cleanContactValue(body.name, 100);
+    const email = cleanContactValue(body.email, 254).toLowerCase();
+    const phone = cleanContactValue(body.phone, 50);
+    const subject = cleanContactValue(body.subject, 50);
+    const message = cleanContactValue(body.message, 4_000);
+
+    if (
+      name.length < 2 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+      !allowedContactSubjects.has(subject) ||
+      message.length < 10
+    ) {
+      sendJson(response, 400, { error: "Please complete the required details" });
+      return;
+    }
+
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPassword = process.env.SMTP_PASSWORD;
+    if (!smtpUser || !smtpPassword) {
+      console.error("Client Care email is not configured: SMTP_USER or SMTP_PASSWORD is missing");
+      sendJson(response, 503, { error: "Client Care is temporarily unavailable. Please email info@herisair.com" });
+      return;
+    }
+
+    const smtpPort = Number(process.env.SMTP_PORT || 465);
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || "smtp.hostinger.com",
+      port: smtpPort,
+      secure: smtpPort === 465,
+      requireTLS: smtpPort === 587,
+      auth: { user: smtpUser, pass: smtpPassword },
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000
+    });
+
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safePhone = escapeHtml(phone || "Not provided");
+    const safeSubject = escapeHtml(subject);
+    const safeMessage = escapeHtml(message).replaceAll("\n", "<br>");
+    const textMessage = [
+      "New Hérisair Client Care enquiry",
+      "",
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Phone: ${phone || "Not provided"}`,
+      `Enquiry: ${subject}`,
+      "",
+      message
+    ].join("\n");
+
+    await transporter.sendMail({
+      from: process.env.CONTACT_FROM_EMAIL || `Hérisair Client Care <${smtpUser}>`,
+      to: contactDestination,
+      replyTo: { name, address: email },
+      subject: `Client Care enquiry · ${subject}`,
+      text: textMessage,
+      html: `
+        <div style="background:#100603;padding:36px;color:#ead2ae;font-family:Georgia,serif">
+          <div style="max-width:640px;margin:auto;border:1px solid #6f351d;padding:34px;background:#1b0905">
+            <p style="margin:0 0 24px;color:#c8792f;letter-spacing:3px;text-transform:uppercase;font:12px Arial,sans-serif">Hérisair Client Care</p>
+            <h1 style="margin:0 0 30px;font-size:30px;font-weight:400">New enquiry</h1>
+            <p><strong>Name</strong><br>${safeName}</p>
+            <p><strong>Email</strong><br><a style="color:#ead2ae" href="mailto:${safeEmail}">${safeEmail}</a></p>
+            <p><strong>Phone</strong><br>${safePhone}</p>
+            <p><strong>Enquiry</strong><br>${safeSubject}</p>
+            <div style="height:1px;background:#6f351d;margin:28px 0"></div>
+            <p style="line-height:1.7">${safeMessage}</p>
+          </div>
+        </div>`
+    });
+
+    sendJson(response, 200, { delivered: true });
+  } catch (error) {
+    console.error("Client Care enquiry failed", error instanceof Error ? error.message : "Unknown error");
+    sendJson(response, 502, { error: "Your enquiry could not be sent. Please email info@herisair.com" });
+  }
 }
 
 function siteUrlFor(request) {
@@ -331,6 +496,10 @@ createServer(async (request, response) => {
   }
   if (pathname === "/api/stripe-webhook") {
     await handleStripeWebhook(request, response);
+    return;
+  }
+  if (pathname === "/api/contact") {
+    await handleContactEnquiry(request, response);
     return;
   }
 

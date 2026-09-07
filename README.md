@@ -39,24 +39,23 @@ the optional Railway variables documented in `.env.example`.
 ## Before launch
 
 1. Confirm product price, size, availability and tested longevity claims in `assets/js/products.js`.
-2. Add a server-side form endpoint to the `data-endpoint` attribute in `contact.html`.
+2. Add the Client Care SMTP credentials to Railway Variables and submit a delivery test.
 3. Replace provisional shipping, returns and legal wording with approved business policies.
 4. Confirm the production domain in `robots.txt`, `sitemap.xml`, canonical tags, and social metadata.
 5. Complete one Stripe test-mode order before switching the matching Price, tax, shipping and secret-key objects to live mode.
 
 ## Contact email connection
 
-Browser JavaScript must never contain SMTP credentials. Create a server-side handler on Hostinger using PHP or another supported server runtime and configure these values outside the public web folder:
+Browser JavaScript never contains SMTP credentials. The Railway server receives `/api/contact` submissions, validates them, applies honeypot and per-IP rate-limit protection, and sends them to `info@herisair.com` through authenticated SMTP. Configure these values in Railway Variables:
 
-- SMTP host (shown in Hostinger Email settings)
-- SMTP port (`465` for SSL or `587` for TLS, as provided by Hostinger)
-- SMTP username (the full mailbox address)
-- SMTP password
-- Encryption method
-- Sender address and sender name
-- Destination client-care address
+- `SMTP_HOST` (for Hostinger Email: `smtp.hostinger.com`)
+- `SMTP_PORT` (`465` for SSL, or `587` for STARTTLS)
+- `SMTP_USER` (the full mailbox address)
+- `SMTP_PASSWORD` (the mailbox password; never commit it)
+- `CONTACT_FROM_EMAIL` (for example `Hérisair Client Care <info@herisair.com>`)
+- `CONTACT_TO_EMAIL` (`info@herisair.com`)
 
-The handler should validate and sanitize every field, reject the hidden `website` honeypot when filled, apply a per-IP rate limit, verify an optional Turnstile/hCaptcha token, send through authenticated SMTP, and return JSON with an appropriate HTTP status. Set its URL on `data-endpoint` in `contact.html`.
+After Railway redeploys, submit one real enquiry on `/client-care` and confirm it reaches the inbox. If delivery volume grows, add Turnstile or hCaptcha in addition to the existing protections.
 
 ## Updating products
 
