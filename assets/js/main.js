@@ -39,7 +39,7 @@
   $$('[data-bag-count]').forEach(x=>x.textContent=bag.reduce((n,i)=>n+i.qty,0));
   const box=$('.bag-items');
   if(!box)return;
-  box.innerHTML=bag.length?bag.map(i=>{const p=productBySlug(i.slug);return `<article class="bag-item"><img src="assets/images/${p.image}" alt=""><div><h3>${p.name}</h3><p>${priceLabel(p)}</p><div class="qty"><button data-dec="${p.slug}" aria-label="Decrease ${p.name} quantity">−</button><span>${i.qty}</span><button data-inc="${p.slug}" aria-label="Increase ${p.name} quantity">+</button></div></div><button class="remove" data-remove="${p.slug}" aria-label="Remove ${p.name}">×</button></article>`}).join(''):'<p class="empty">Your selection is currently empty.</p>';
+  box.innerHTML=bag.length?bag.map(i=>{const p=productBySlug(i.slug);return `<article class="bag-item"><img src="assets/images/${p.storeImage||p.image}" alt="${p.name} by Hérisair"><div><h3>${p.name}</h3><p>${priceLabel(p)}</p><div class="qty"><button data-dec="${p.slug}" aria-label="Decrease ${p.name} quantity">−</button><span>${i.qty}</span><button data-inc="${p.slug}" aria-label="Increase ${p.name} quantity">+</button></div></div><button class="remove" data-remove="${p.slug}" aria-label="Remove ${p.name}">×</button></article>`}).join(''):'<p class="empty">Your selection is currently empty.</p>';
   const hasPending=bag.some(i=>!Number.isFinite(productBySlug(i.slug).price));
   const total=bag.reduce((n,i)=>n+(Number.isFinite(productBySlug(i.slug).price)?productBySlug(i.slug).price:0)*i.qty,0);
   $('[data-total]').textContent=hasPending?'Price pending':`AED ${total}`;
