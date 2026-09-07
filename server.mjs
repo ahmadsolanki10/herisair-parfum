@@ -6,7 +6,33 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 3000);
-const productionSiteUrl = "https://herisair-parfum-production.up.railway.app";
+const canonicalSiteUrl = (process.env.CANONICAL_SITE_URL || "https://herisair.com").replace(/\/+$/, "");
+const canonicalHost = new URL(canonicalSiteUrl).host;
+
+const cleanRoutes = new Map([
+  ["/", "index.html"],
+  ["/house", "our-house.html"],
+  ["/collection", "collection.html"],
+  ["/discover", "quiz.html"],
+  ["/discover/unity", "unity.html"],
+  ["/discover/ascent", "ascent.html"],
+  ["/discover/eminence", "eminence.html"],
+  ["/store", "store.html"],
+  ["/client-care", "contact.html"],
+  ["/faq", "faq.html"],
+  ["/shipping", "shipping.html"],
+  ["/returns", "returns.html"],
+  ["/privacy", "privacy.html"],
+  ["/terms", "terms.html"],
+  ["/cookies", "cookies.html"],
+  ["/order-confirmation", "checkout-success.html"],
+  ["/preview/mobile", "mobile-preview.html"],
+  ["/preview/house", "house-mobile-preview.html"]
+]);
+
+const canonicalRouteByFile = new Map(
+  [...cleanRoutes].map(([route, file]) => [file.toLowerCase(), route])
+);
 
 const stripeCatalog = {
   unity: process.env.STRIPE_PRICE_UNITY || "price_1UCHCIKIWkWSAwgQP2hBgFyd",
@@ -63,9 +89,27 @@ function readRequestBody(request, maximumBytes = 16_384) {
 }
 
 function siteUrlFor(request) {
-  const configuredUrl = (process.env.PUBLIC_SITE_URL || productionSiteUrl).replace(/\/$/, "");
   const host = request.headers.host || "";
-  return /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(host) ? `http://${host}` : configuredUrl;
+  return /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(host) ? `http://${host}` : canonicalSiteUrl;
+}
+
+function sendRedirect(response, location, status = 308) {
+  response.writeHead(status, {
+    location,
+    "cache-control": "no-store"
+  });
+  response.end();
+}
+
+function normalisePublicPath(pathname) {
+  if (pathname.length > 1 && pathname.endsWith("/")) return pathname.replace(/\/+$/, "");
+  return pathname;
+}
+
+function canonicalPathFor(pathname) {
+  const normalisedPath = normalisePublicPath(pathname);
+  const fileName = normalisedPath.split("/").pop()?.toLowerCase() || "";
+  return canonicalRouteByFile.get(fileName) || normalisedPath;
 }
 
 function normaliseCart(items) {
@@ -105,8 +149,8 @@ async function createCheckoutSession(request, response) {
     const siteUrl = siteUrlFor(request);
     const form = new URLSearchParams({
       mode: "payment",
-      success_url: `${siteUrl}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/store.html?checkout=cancelled`,
+      success_url: `${siteUrl}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}/store?checkout=cancelled`,
       customer_creation: "always",
       billing_address_collection: "required",
       "phone_number_collection[enabled]": "true",
@@ -248,12 +292,34 @@ async function handleStripeWebhook(request, response) {
 }
 
 createServer(async (request, response) => {
-  const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
+  const requestUrl = new URL(request.url, "http://localhost");
+  const pathname = decodeURIComponent(requestUrl.pathname);
 
   if (pathname === "/health") {
     sendJson(response, 200, { status: "ok" });
     return;
   }
+
+  const requestedHost = String(request.headers["x-forwarded-host"] || request.headers.host || "")
+    .split(",")[0]
+    .trim()
+    .toLowerCase();
+  const canonicalPath = canonicalPathFor(pathname);
+  const isRailwayAddress = requestedHost.endsWith(".up.railway.app");
+  const isLocalAddress = /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(requestedHost);
+  const hasLegacyOrNonCanonicalPath = canonicalPath !== pathname;
+
+  if ((request.method === "GET" || request.method === "HEAD") && (isRailwayAddress || hasLegacyOrNonCanonicalPath)) {
+    const destinationHost = isRailwayAddress ? canonicalHost : requestedHost;
+    const destinationProtocol = isRailwayAddress
+      ? new URL(canonicalSiteUrl).protocol
+      : isLocalAddress
+        ? "http:"
+        : "https:";
+    sendRedirect(response, `${destinationProtocol}//${destinationHost}${canonicalPath}${requestUrl.search}`);
+    return;
+  }
+
   if (pathname === "/api/create-checkout-session") {
     await createCheckoutSession(request, response);
     return;
@@ -273,7 +339,9 @@ createServer(async (request, response) => {
     return;
   }
 
-  const relativePath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
+  let relativePath = cleanRoutes.get(pathname) || pathname.replace(/^\/+/, "");
+  const nestedAssetIndex = relativePath.indexOf("assets/");
+  if (nestedAssetIndex > 0) relativePath = relativePath.slice(nestedAssetIndex);
   const safePath = normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, "");
   let filePath = join(root, safePath);
 

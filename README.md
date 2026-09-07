@@ -24,12 +24,12 @@ they must never be added to browser code or committed to GitHub.
 Required Railway variables:
 
 - `STRIPE_SECRET_KEY`: the Stripe secret key for the same mode as the configured products and prices
-- `PUBLIC_SITE_URL`: `https://herisair-parfum-production.up.railway.app`
+- `CANONICAL_SITE_URL`: `https://herisair.com` (optional; this is also the built-in production default)
 - `STRIPE_WEBHOOK_SECRET`: the signing secret from the production Stripe webhook
 
 Create the Stripe webhook with this endpoint:
 
-`https://herisair-parfum-production.up.railway.app/api/stripe-webhook`
+`https://herisair.com/api/stripe-webhook`
 
 Subscribe it to `checkout.session.completed` and
 `checkout.session.async_payment_succeeded`. The Stripe Price, tax-rate and
