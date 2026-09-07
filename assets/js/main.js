@@ -4,7 +4,7 @@
  const storeProducts=window.HERISAIR_STORE_PRODUCTS||products;
  const root=document.documentElement;
  const header=$('[data-header]');
- if(header) header.innerHTML=`<a class="skip" href="#main">Skip to content</a><div class="notice">Complimentary UAE delivery on the inaugural collection</div><div class="nav"><button class="menu" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button><a class="brand" href="index.html" aria-label="Hérisair home"><img src="assets/images/herisair-header-logo.png" alt="Hérisair"></a><nav aria-label="Main navigation"><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><div class="shop-menu"><button type="button" class="shop-trigger" aria-haspopup="true">Discover</button><div class="shop-dropdown"><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a></div></div><a href="store.html">Store</a></nav><div class="nav-actions"><a class="nav-icon" href="contact.html" aria-label="Client account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"></circle><path d="M5.5 20c.5-4 2.7-6 6.5-6s6 2 6.5 6"></path></svg></a><button class="bag-open nav-icon" aria-label="Open shopping bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h14l1 12H4l1-12Z"></path><path d="M9 9V6.5a3 3 0 0 1 6 0V9"></path></svg><span class="sr-only" data-bag-count>0</span></button></div></div><div class="mobile-nav"><div class="mobile-nav-panel" data-mobile-menu-main><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><button type="button" class="mobile-discover-open" aria-expanded="false">Discover <span aria-hidden="true">→</span></button><a href="store.html">Store</a><a href="contact.html">Client care</a></div><div class="mobile-nav-panel mobile-nav-discover" data-mobile-menu-discover hidden><button type="button" class="mobile-discover-back"><span aria-hidden="true">←</span> Back</button><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a></div></div>`;
+ if(header) header.innerHTML=`<a class="skip" href="#main">Skip to content</a><div class="notice">Complimentary UAE delivery on the inaugural collection</div><div class="nav"><button class="menu" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button><a class="brand" href="index.html" aria-label="Hérisair home"><img src="assets/images/herisair-header-logo.png" alt="Hérisair"></a><nav aria-label="Main navigation"><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><div class="shop-menu"><button type="button" class="shop-trigger" aria-haspopup="true">Discover</button><div class="shop-dropdown"><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a><a href="quiz.html">Private Consultation</a></div></div><a href="store.html">Store</a></nav><div class="nav-actions"><a class="nav-icon" href="contact.html" aria-label="Client account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"></circle><path d="M5.5 20c.5-4 2.7-6 6.5-6s6 2 6.5 6"></path></svg></a><button class="bag-open nav-icon" aria-label="Open shopping bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h14l1 12H4l1-12Z"></path><path d="M9 9V6.5a3 3 0 0 1 6 0V9"></path></svg><span class="sr-only" data-bag-count>0</span></button></div></div><div class="mobile-nav"><div class="mobile-nav-panel" data-mobile-menu-main><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><button type="button" class="mobile-discover-open" aria-expanded="false">Discover <span aria-hidden="true">→</span></button><a href="store.html">Store</a><a href="contact.html">Client care</a></div><div class="mobile-nav-panel mobile-nav-discover" data-mobile-menu-discover hidden><button type="button" class="mobile-discover-back"><span aria-hidden="true">←</span> Back</button><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a><a href="quiz.html">Private Consultation</a></div></div>`;
  const footer=$('[data-footer]');
  if(footer) footer.innerHTML=`<div class="footer-grid"><div><a class="brand" href="index.html">HÉRISAIR</a><p>Automotive fragrance,<br>composed in the UAE.</p></div><div><b>Explore</b><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><a href="quiz.html">Scent Discovery</a></div><div><b>Contact Us</b><a href="contact.html">Contact</a><a href="faq.html">Care & FAQs</a><a href="shipping.html">Shipping & delivery</a><a href="returns.html">Returns</a></div><div><b>Socials</b><a href="https://www.instagram.com/herisair.parfum/" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://www.tiktok.com/@herisair.parfum" target="_blank" rel="noopener noreferrer">TikTok</a></div><div><b>Legal</b><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="cookies.html">Cookies</a></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Hérisair</span><span>Dubai, United Arab Emirates</span></div>`;
  document.body.insertAdjacentHTML('beforeend',`<aside class="bag" aria-hidden="true"><div class="bag-head"><h2>Your selection</h2><button class="bag-close" aria-label="Close shopping bag">×</button></div><div class="bag-items"></div><div class="bag-total"><span>Subtotal</span><strong data-total>AED 0</strong><button class="btn checkout">Proceed to secure checkout</button><small>VAT included · Delivery selected at secure checkout</small></div></aside><div class="scrim"></div><div class="toast" role="status"></div>`);
@@ -70,14 +70,14 @@
   return `<dl class="store-note-pyramid" aria-label="${p.name} fragrance notes"><div><dt>Top</dt><dd>${p.storeNotes.top.join(' · ')}</dd></div><div><dt>Heart</dt><dd>${p.storeNotes.heart.join(' · ')}</dd></div><div><dt>Base</dt><dd>${p.storeNotes.base.join(' · ')}</dd></div></dl>`;
  }
  function storeCardMarkup(p,detailLink=true){
-  const figure=`<figure><img src="assets/images/${p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure>`;
+  const figure=`<figure><img src="assets/images/${p.storeImage||p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure>`;
   const meta=`<p class="eyebrow">${p.storeFamily||p.family}</p><h3>${detailLink?`<a class="store-card-title-link" href="${p.slug}.html">${p.name}</a>`:p.name}</h3>${storeNotesMarkup(p)}<strong>${priceLabel(p)}</strong>`;
   const details=detailLink?`<a class="store-card-link" href="${p.slug}.html" aria-label="Discover ${p.name}">${figure}</a><div class="store-card-meta">${meta}</div>`:`<div class="store-card-link">${figure}<div class="store-card-meta">${meta}</div></div>`;
   return `<article class="store-card reveal" data-store-card>${details}<div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></article>`;
  }
  function storeFragranceRowMarkup(p,index){
   const direction=index%2?' store-fragrance-row-reverse':'';
-  return `<article class="store-card store-fragrance-row${direction} reveal" id="store-${p.slug}" data-store-card><a class="store-fragrance-media" href="${p.slug}.html" aria-label="Discover ${p.name}"><figure><img src="assets/images/${p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure></a><div class="store-fragrance-details"><div class="store-card-meta"><p class="eyebrow">${p.storeFamily||p.family}</p><h3><a class="store-card-title-link" href="${p.slug}.html">${p.name}</a></h3>${storeNotesMarkup(p)}<strong>${priceLabel(p)}</strong></div><div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></div></article>`;
+  return `<article class="store-card store-fragrance-row store-chapter-scroll${direction} reveal" id="store-${p.slug}" data-store-card><a class="store-fragrance-media" href="${p.slug}.html" aria-label="Discover ${p.name}"><figure><img src="assets/images/${p.storeImage||p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure></a><div class="store-fragrance-details"><div class="store-card-meta"><p class="eyebrow">${p.storeFamily||p.family}</p><h3><a class="store-card-title-link" href="${p.slug}.html">${p.name}</a></h3>${storeNotesMarkup(p)}<strong>${priceLabel(p)}</strong></div><div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></div></article>`;
  }
  const storeFragrances=$('[data-store-fragrances]');
  if(storeFragrances){
@@ -86,9 +86,38 @@
   if(storeTarget)requestAnimationFrame(()=>storeTarget.scrollIntoView({block:'start'}));
  }
  const storeDiscovery=$('[data-store-discovery]');
- if(storeDiscovery&&window.HERISAIR_DISCOVERY_SET)storeDiscovery.innerHTML=storeCardMarkup(window.HERISAIR_DISCOVERY_SET,false);
+ if(storeDiscovery&&window.HERISAIR_DISCOVERY_SET){
+  const p=window.HERISAIR_DISCOVERY_SET;
+  storeDiscovery.innerHTML=`<article class="store-card reveal" data-store-card><div class="store-card-link"><figure><img src="assets/images/${p.storeImage||p.image}" loading="lazy" alt="${p.name} by Hérisair"></figure></div><div class="store-discovery-buy"><strong>${priceLabel(p)}</strong><div class="store-purchase"><div class="store-quantity" aria-label="Quantity"><button type="button" data-store-adjust="-1" aria-label="Decrease quantity">−</button><span data-store-qty>1</span><button type="button" data-store-adjust="1" aria-label="Increase quantity">+</button></div><button type="button" class="btn store-add" data-add="${p.slug}">Add to bag</button></div></div></article>`;
+ }
  const detail=$('[data-product-detail]'); if(detail){const slug=document.body.dataset.product,p=products.find(x=>x.slug===slug);if(p){detail.innerHTML=`<section class="product-detail-hero"><div class="product-visual"><img src="assets/images/${p.image}" alt="Hérisair ${p.name} fragrance bottle"></div><div class="product-buy"><p class="eyebrow">${p.number} · ${p.family}</p><h1>${p.name}</h1><p class="product-tagline">${p.tagline}</p><p>${p.description}</p><div class="price">AED ${p.price}</div><button class="btn" data-add="${p.slug}">Add to bag</button><p class="micro">Complimentary UAE delivery · Secure checkout</p></div></section><section class="notes"><div><p class="eyebrow">The composition</p><h2>${p.character}</h2><p>${p.description}</p><ol>${p.notes.map((n,i)=>`<li><span>0${i+1}</span>${n}</li>`).join('')}</ol></div><img src="assets/images/${p.detail}" loading="lazy" alt="The notes of ${p.name}"></section><section class="ritual-banner" style="background-image:url('assets/images/${p.interior}')"><div><p class="eyebrow">The private atmosphere</p><h2>Composed for<br>the journey within</h2></div></section>`}}
- const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});$$('.reveal:not(.house-scroll-reveal)').forEach(e=>observer.observe(e));
+ const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});$$('.reveal:not(.house-scroll-reveal):not(.store-chapter-scroll)').forEach(e=>observer.observe(e));
+ const storeChapterSections=$$('.store-page .store-chapter-scroll');
+ if(storeChapterSections.length){
+  let storeChaptersTicking=false;
+  const updateStoreChapters=()=>{
+   storeChaptersTicking=false;
+   let activeSection=null;
+   let greatestVisibleArea=0;
+   storeChapterSections.forEach(section=>{
+    const rect=section.getBoundingClientRect();
+    const visibleArea=Math.max(0,Math.min(rect.bottom,window.innerHeight)-Math.max(rect.top,0));
+    if(visibleArea>greatestVisibleArea){
+     greatestVisibleArea=visibleArea;
+     activeSection=section;
+    }
+   });
+   const minimumVisibleArea=Math.min(window.innerHeight*.18,(activeSection?.getBoundingClientRect().height||0)*.22);
+   if(greatestVisibleArea<minimumVisibleArea)activeSection=null;
+   storeChapterSections.forEach(section=>section.classList.toggle('in',section===activeSection));
+  };
+  const handleStoreChapterScroll=()=>{
+   if(!storeChaptersTicking){storeChaptersTicking=true;requestAnimationFrame(updateStoreChapters)}
+  };
+  updateStoreChapters();
+  window.addEventListener('scroll',handleStoreChapterScroll,{passive:true});
+  window.addEventListener('resize',handleStoreChapterScroll,{passive:true});
+ }
  const homeScrollSections=$$('.home main>section.scroll-reveal');
  const homeHero=$('.home .hero');
  if(homeScrollSections.length||homeHero){
