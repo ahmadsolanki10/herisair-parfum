@@ -37,7 +37,8 @@ const canonicalRouteByFile = new Map(
 const stripeCatalog = {
   unity: process.env.STRIPE_PRICE_UNITY || "price_1UCHCIKIWkWSAwgQP2hBgFyd",
   ascent: process.env.STRIPE_PRICE_ASCENT || "price_1UCHEhKIWkWSAwgQaFxosM9o",
-  eminence: process.env.STRIPE_PRICE_EMINENCE || "price_1UCHFrKIWkWSAwgQNF6baBDd"
+  eminence: process.env.STRIPE_PRICE_EMINENCE || "price_1UCHFrKIWkWSAwgQNF6baBDd",
+  "discovery-set": process.env.STRIPE_PRICE_DISCOVERY_SET || "price_1UD0YpKIWkWSAwgQeZQPS6W1"
 };
 
 const stripeTaxRate = process.env.STRIPE_TAX_RATE_UAE || "txr_1UCHZPKIWkWSAwgQt6ghQaLw";
