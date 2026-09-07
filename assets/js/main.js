@@ -268,7 +268,7 @@
   }
   function showResult(){
    const slug=Object.keys(scores).sort((a,b)=>scores[b]-scores[a])[0],p=products.find(x=>x.slug===slug),detail=resultDetails[slug];
-   quiz.innerHTML=`<article class="scent-quiz-result scent-quiz-enter"><picture class="scent-quiz-result-media"><source media="(max-width: 850px)" srcset="assets/images/${detail.mobile}"><img src="assets/images/${detail.desktop}" alt="Hérisair ${p.name} fragrance"></picture><div class="scent-quiz-result-copy"><p class="eyebrow">Your fragrance</p><p class="scent-quiz-chapter">${detail.chapter}</p><h2>${p.name}</h2><p class="scent-quiz-family">${detail.family}</p><p class="scent-quiz-result-description">${p.description}</p><div class="scent-quiz-result-actions"><a class="scent-quiz-button" href="${p.slug}.html">Discover ${p.name}</a><button class="scent-quiz-restart" type="button" data-restart>Begin again</button></div></div></article>`;
+   quiz.innerHTML=`<article class="scent-quiz-result scent-quiz-result--${p.slug} scent-quiz-enter"><picture class="scent-quiz-result-media"><source media="(max-width: 850px)" srcset="assets/images/${detail.mobile}"><img src="assets/images/${detail.desktop}" alt="Hérisair ${p.name} fragrance"></picture><div class="scent-quiz-result-copy"><p class="eyebrow">Your fragrance</p><p class="scent-quiz-chapter">${detail.chapter}</p><h2>${p.name}</h2><p class="scent-quiz-family">${detail.family}</p><p class="scent-quiz-result-description">${p.description}</p><div class="scent-quiz-result-actions"><a class="scent-quiz-button" href="${p.slug}.html">Discover ${p.name}</a><button class="scent-quiz-restart" type="button" data-restart>Begin again</button></div></div></article>`;
    $('[data-restart]',quiz).onclick=restart;
   }
   bindStart();
