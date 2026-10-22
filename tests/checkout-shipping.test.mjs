@@ -81,6 +81,8 @@ function assertShipping(stripe, rates) {
   assert.deepEqual([...stripe].filter(([key]) => key.startsWith("shipping_options")).map(([, value]) => value), rates);
   assert.equal(stripe.get("line_items[0][quantity]"), "2");
   assert.equal(stripe.get("mode"), "payment");
+  assert.equal(stripe.get("currency"), "aed");
+  assert.equal(stripe.get("adaptive_pricing[enabled]"), "false");
 }
 
 test("Checkout needs no country selection and puts the new rate directly after Standard", async t => {

@@ -43,6 +43,10 @@ The GCC rate is intended for Bahrain, Kuwait, Oman, Qatar, and Saudi Arabia;
 customers choose the applicable method. All four methods remain visible in
 hosted Checkout, which accepts delivery addresses in all six GCC countries.
 
+Website checkout explicitly charges in AED and disables Stripe Adaptive Pricing
+for newly created sessions. Previously opened checkout sessions keep their
+original settings; start a new checkout to use the updated currency rules.
+
 ## Before launch
 
 1. Confirm product price, size, availability and tested longevity claims in `assets/js/products.js`.

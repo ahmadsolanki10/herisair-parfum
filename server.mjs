@@ -316,6 +316,8 @@ async function createCheckoutSession(request, response) {
     const siteUrl = siteUrlFor(request);
     const form = new URLSearchParams({
       mode: "payment",
+      currency: "aed",
+      "adaptive_pricing[enabled]": "false",
       success_url: `${siteUrl}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/store?checkout=cancelled`,
       customer_creation: "always",
