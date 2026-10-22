@@ -36,6 +36,12 @@ Subscribe it to `checkout.session.completed` and
 shipping-rate IDs are configured in `server.mjs` and may be overridden through
 the optional Railway variables documented in `.env.example`.
 
+Customers select their delivery country in the shopping bag before opening
+Stripe Checkout. The server restricts that checkout to the selected country.
+The existing three shipping rates remain available; the additional
+`STRIPE_SHIPPING_GCC` rate is offered only for Bahrain, Kuwait, Oman, Qatar,
+and Saudi Arabia. To change country, return to the bag and start a new checkout.
+
 ## Before launch
 
 1. Confirm product price, size, availability and tested longevity claims in `assets/js/products.js`.
