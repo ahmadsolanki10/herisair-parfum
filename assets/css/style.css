@@ -3142,36 +3142,6 @@ body.house-page.store-page{
   font-weight:400;
   line-height:1;
 }
-.bag-delivery{
-  grid-column:1/-1;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:.55rem;
-}
-.bag-delivery label{
-  color:var(--bag-muted);
-  font:500 .875rem/1.5 Manrope,Arial,sans-serif;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-}
-.bag-delivery select{
-  width:100%;
-  min-height:48px;
-  padding:.6rem .8rem;
-  border:1px solid rgba(213,168,112,.42);
-  border-radius:0;
-  background:#160704;
-  color:var(--bag-copy);
-  color-scheme:dark;
-  font:400 16px/1.5 Manrope,Arial,sans-serif;
-}
-.bag-delivery select:focus-visible{
-  outline:2px solid #c78236;
-  outline-offset:3px;
-}
-.bag-delivery select:disabled{cursor:wait;opacity:.62}
-.bag-delivery option{background:#160704;color:var(--bag-copy)}
 .bag-total .checkout{
   min-height:58px;
   border:1px solid #c78236;

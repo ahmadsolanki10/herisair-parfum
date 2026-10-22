@@ -45,11 +45,10 @@ const stripeCatalog = {
 const stripeTaxRate = process.env.STRIPE_TAX_RATE_UAE || "txr_1UCHZPKIWkWSAwgQt6ghQaLw";
 const stripeShippingRates = [
   process.env.STRIPE_SHIPPING_STANDARD || "shr_1UCHNqKIWkWSAwgQ7Y5ixj6s",
+  process.env.STRIPE_SHIPPING_GCC || "shr_1USolRKIWkWSAwgQBCDvsLiI",
   process.env.STRIPE_SHIPPING_FOUNDER_UAE || "shr_1UCHWRKIWkWSAwgQhPmHRrY5",
   process.env.STRIPE_SHIPPING_FOUNDER_GCC || "shr_1UCHXQKIWkWSAwgQqtRoEqsL"
 ].filter(Boolean);
-const gccShippingCountries = new Set(["BH", "KW", "OM", "QA", "SA"]);
-const stripeShippingGcc = process.env.STRIPE_SHIPPING_GCC || "shr_1USolRKIWkWSAwgQBCDvsLiI";
 
 const contactDestination = process.env.CONTACT_TO_EMAIL || "info@herisair.com";
 const contactRateLimits = new Map();
@@ -308,22 +307,11 @@ async function createCheckoutSession(request, response) {
 
   try {
     const rawBody = await readRequestBody(request);
-    const checkoutRequest = JSON.parse(rawBody.toString("utf8"));
-    const cart = normaliseCart(checkoutRequest?.items);
+    const cart = normaliseCart(JSON.parse(rawBody.toString("utf8"))?.items);
     if (!cart.length) {
       sendJson(response, 400, { error: "Your selection is empty" });
       return;
     }
-
-    const shippingCountry = String(checkoutRequest?.shippingCountry || "").trim().toUpperCase();
-    if (shippingCountry !== "AE" && !gccShippingCountries.has(shippingCountry)) {
-      sendJson(response, 400, { error: "Choose a delivery country in your bag, then try again. If the country selector is missing, refresh this page." });
-      return;
-    }
-    const shippingRates = [...new Set([
-      ...stripeShippingRates,
-      ...(gccShippingCountries.has(shippingCountry) ? [stripeShippingGcc] : [])
-    ])];
 
     const siteUrl = siteUrlFor(request);
     const form = new URLSearchParams({
@@ -339,7 +327,9 @@ async function createCheckoutSession(request, response) {
       "payment_intent_data[metadata][order_source]": "herisair_website"
     });
 
-    form.set("shipping_address_collection[allowed_countries][0]", shippingCountry);
+    ["AE", "BH", "KW", "OM", "QA", "SA"].forEach((country, index) => {
+      form.set(`shipping_address_collection[allowed_countries][${index}]`, country);
+    });
 
     cart.forEach((item, index) => {
       form.set(`line_items[${index}][price]`, stripeCatalog[item.slug]);
@@ -347,7 +337,7 @@ async function createCheckoutSession(request, response) {
       form.set(`line_items[${index}][tax_rates][0]`, stripeTaxRate);
     });
 
-    shippingRates.forEach((shippingRate, index) => {
+    stripeShippingRates.forEach((shippingRate, index) => {
       form.set(`shipping_options[${index}][shipping_rate]`, shippingRate);
     });
 

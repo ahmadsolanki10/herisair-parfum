@@ -59,11 +59,11 @@ async function startServer(t, overrides = {}) {
       if (match) { clearTimeout(timeout); resolve(match[1]); }
     });
   });
-  return async (shippingCountry, extra = {}) => {
+  return async (extra = {}) => {
     const response = await fetch(`http://127.0.0.1:${port}/api/create-checkout-session`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ items: [{ slug: "unity", qty: 2 }], shippingCountry, ...extra })
+      body: JSON.stringify({ items: [{ slug: "unity", qty: 2 }], ...extra })
     });
     const result = await response.json();
     return {
@@ -74,44 +74,41 @@ async function startServer(t, overrides = {}) {
   };
 }
 
-function assertShipping(stripe, country, rates) {
-  assert.deepEqual([...stripe].filter(([key]) => key.startsWith("shipping_address_collection")), [
-    ["shipping_address_collection[allowed_countries][0]", country]
-  ]);
+function assertShipping(stripe, rates) {
+  assert.deepEqual([...stripe].filter(([key]) => key.startsWith("shipping_address_collection")),
+    ["AE", "BH", "KW", "OM", "QA", "SA"].map((country, index) =>
+      [`shipping_address_collection[allowed_countries][${index}]`, country]));
   assert.deepEqual([...stripe].filter(([key]) => key.startsWith("shipping_options")).map(([, value]) => value), rates);
   assert.equal(stripe.get("line_items[0][quantity]"), "2");
   assert.equal(stripe.get("mode"), "payment");
 }
 
-test("UAE retains the original three rates; all other GCC countries also receive the new rate", async t => {
+test("Checkout needs no country selection and puts the new rate directly after Standard", async t => {
   const checkout = await startServer(t);
-  for (const country of ["AE", "BH", "KW", "OM", "QA", "SA"]) {
-    const { status, stripe } = await checkout(country);
-    assert.equal(status, 200, country);
-    assertShipping(stripe, country, country === "AE" ? originalRates : [...originalRates, gccRate]);
-  }
-});
-
-test("Missing and unsupported destinations cannot create a checkout", async t => {
-  const checkout = await startServer(t);
-  for (const country of [undefined, null, "", "US", "GB", "AE,SA", {}, ["AE", "SA"]]) {
-    const { status, stripe, result } = await checkout(country);
-    assert.equal(status, 400);
-    assert.equal(stripe, null);
-    assert.match(result.error, /delivery country/);
-  }
-});
-
-test("Country values normalize and browser-supplied rates cannot override server choices", async t => {
-  const checkout = await startServer(t);
-  const { status, stripe } = await checkout(" sa ", { shippingRates: ["shr_untrusted"], shipping_options: [] });
+  const { status, stripe } = await checkout();
   assert.equal(status, 200);
-  assertShipping(stripe, "SA", [...originalRates, gccRate]);
+  assertShipping(stripe, [originalRates[0], gccRate, ...originalRates.slice(1)]);
 });
 
-test("The additional rate supports a configuration override without duplicating existing rates", async t => {
-  const checkout = await startServer(t, { STRIPE_SHIPPING_GCC: originalRates[2] });
-  const { status, stripe } = await checkout("QA");
+test("An empty bag cannot create a checkout", async t => {
+  const checkout = await startServer(t);
+  const { status, stripe, result } = await checkout({ items: [] });
+  assert.equal(status, 400);
+  assert.equal(stripe, null);
+  assert.match(result.error, /selection is empty/);
+});
+
+test("Browser-supplied rates or stale country selections cannot change shipping options", async t => {
+  const checkout = await startServer(t);
+  const { status, stripe } = await checkout({ shippingCountry: "SA", shippingRates: ["shr_untrusted"], shipping_options: [] });
   assert.equal(status, 200);
-  assertShipping(stripe, "QA", originalRates);
+  assertShipping(stripe, [originalRates[0], gccRate, ...originalRates.slice(1)]);
+});
+
+test("The additional rate supports a configuration override in the same position", async t => {
+  const replacement = "shr_test_gcc_override";
+  const checkout = await startServer(t, { STRIPE_SHIPPING_GCC: replacement });
+  const { status, stripe } = await checkout();
+  assert.equal(status, 200);
+  assertShipping(stripe, [originalRates[0], replacement, ...originalRates.slice(1)]);
 });

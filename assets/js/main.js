@@ -7,7 +7,7 @@
  if(header) header.innerHTML=`<a class="skip" href="#main">Skip to content</a><div class="notice">Complimentary UAE delivery on the inaugural collection</div><div class="nav"><button class="menu" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button><a class="brand" href="index.html" aria-label="Hérisair home"><img src="assets/images/herisair-header-logo.png" alt="Hérisair"></a><nav aria-label="Main navigation"><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><div class="shop-menu"><button type="button" class="shop-trigger" aria-haspopup="true">Discover</button><div class="shop-dropdown"><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a><a href="quiz.html">Private Consultation</a></div></div><a href="store.html">Store</a></nav><div class="nav-actions"><a class="nav-icon" href="contact.html" aria-label="Client account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"></circle><path d="M5.5 20c.5-4 2.7-6 6.5-6s6 2 6.5 6"></path></svg></a><button class="bag-open nav-icon" aria-label="Open shopping bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h14l1 12H4l1-12Z"></path><path d="M9 9V6.5a3 3 0 0 1 6 0V9"></path></svg><span class="sr-only" data-bag-count>0</span></button></div></div><div class="mobile-nav"><div class="mobile-nav-panel" data-mobile-menu-main><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><button type="button" class="mobile-discover-open" aria-expanded="false">Discover <span aria-hidden="true">→</span></button><a href="store.html">Store</a><a href="contact.html">Client care</a></div><div class="mobile-nav-panel mobile-nav-discover" data-mobile-menu-discover hidden><button type="button" class="mobile-discover-back"><span aria-hidden="true">←</span> Back</button><a href="unity.html">Unity</a><a href="ascent.html">Ascent</a><a href="eminence.html">Eminence</a><a href="quiz.html">Private Consultation</a></div></div>`;
  const footer=$('[data-footer]');
  if(footer) footer.innerHTML=`<div class="footer-grid"><div><a class="brand" href="index.html">HÉRISAIR</a><p>Automotive fragrance,<br>composed in the UAE.</p></div><div><b>Explore</b><a href="our-house.html">The House</a><a href="collection.html">Launch Collection</a><a href="quiz.html">Scent Discovery</a></div><div><b>Contact Us</b><a href="contact.html">Contact</a><a href="faq.html">Care & FAQs</a><a href="shipping.html">Shipping & delivery</a><a href="returns.html">Returns</a></div><div><b>Socials</b><a href="https://www.instagram.com/herisair.parfum/" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://www.tiktok.com/@herisair.parfum" target="_blank" rel="noopener noreferrer">TikTok</a></div><div><b>Legal</b><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="cookies.html">Cookies</a></div></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Hérisair</span><span>Dubai, United Arab Emirates</span></div>`;
- document.body.insertAdjacentHTML('beforeend',`<aside class="bag" aria-hidden="true"><div class="bag-head"><h2>Your selection</h2><button class="bag-close" aria-label="Close shopping bag">×</button></div><div class="bag-items"></div><form class="bag-total"><span>Subtotal</span><strong data-total>AED 0</strong><div class="bag-delivery"><label for="bag-delivery-country">Delivery country</label><select id="bag-delivery-country" name="shippingCountry" autocomplete="shipping country" required><option value="">Select delivery country</option><option value="AE">United Arab Emirates</option><option value="BH">Bahrain</option><option value="KW">Kuwait</option><option value="OM">Oman</option><option value="QA">Qatar</option><option value="SA">Saudi Arabia</option></select></div><button type="submit" class="btn checkout">Proceed to secure checkout</button><small>VAT included · Delivery selected at secure checkout</small></form></aside><div class="scrim"></div><div class="toast" role="status"></div>`);
+ document.body.insertAdjacentHTML('beforeend',`<aside class="bag" aria-hidden="true"><div class="bag-head"><h2>Your selection</h2><button class="bag-close" aria-label="Close shopping bag">×</button></div><div class="bag-items"></div><div class="bag-total"><span>Subtotal</span><strong data-total>AED 0</strong><button class="btn checkout">Proceed to secure checkout</button><small>VAT included · Delivery selected at secure checkout</small></div></aside><div class="scrim"></div><div class="toast" role="status"></div>`);
  const menu=$('.menu');
  const mobileMenuMain=$('[data-mobile-menu-main]');
  const mobileMenuDiscover=$('[data-mobile-menu-discover]');
@@ -225,27 +225,20 @@
   }
  }
  if(new URLSearchParams(location.search).get('checkout')==='cancelled')showToast('Your selection has been kept. Checkout was not completed.');
- const checkout=$('.checkout'),checkoutForm=$('.bag-total'),deliveryCountry=$('#bag-delivery-country');if(checkout&&checkoutForm&&deliveryCountry)checkoutForm.onsubmit=async event=>{
-  event.preventDefault();
-  if(checkout.disabled)return;
-  if(!checkoutForm.reportValidity())return;
+ const checkout=$('.checkout');if(checkout)checkout.onclick=async()=>{
   if(!bag.length){showToast('Your selection is empty.');return}
   if(location.protocol==='file:'){showToast('Secure checkout is available on the live website.');return}
-  const originalLabel=checkout.textContent,shippingCountry=deliveryCountry.value;
+  const originalLabel=checkout.textContent;
   checkout.disabled=true;
-  deliveryCountry.disabled=true;
-  checkoutForm.setAttribute('aria-busy','true');
   checkout.textContent='Preparing secure checkout…';
   try{
-   const response=await fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:bag.map(({slug,qty})=>({slug,qty})),shippingCountry})});
+   const response=await fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:bag.map(({slug,qty})=>({slug,qty}))})});
    const result=await response.json();
    if(!response.ok||!result.url)throw new Error(result.error||'Secure checkout could not be opened');
    location.assign(result.url);
   }catch(error){
    showToast(error.message||'Secure checkout could not be opened. Please try again.');
    checkout.disabled=false;
-   deliveryCountry.disabled=false;
-   checkoutForm.removeAttribute('aria-busy');
    checkout.textContent=originalLabel;
   }
  };
